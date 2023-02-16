@@ -1,0 +1,13 @@
+[gd_scene load_steps=3 format=2]
+
+[ext_resource path="res://icon.png" type="Texture" id=1]
+[ext_resource path="res://Scripts/Form/LogoForm.cs" type="Script" id=2]
+
+[node name="Control" type="Control"]
+margin_right = 1027.0
+margin_bottom = 600.0
+script = ExtResource( 2 )
+
+[node name="Icon" type="Sprite" parent="."]
+position = Vector2( 481, 240 )
+texture = ExtResource( 1 )
