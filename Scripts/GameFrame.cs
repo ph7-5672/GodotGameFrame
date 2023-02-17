@@ -1,3 +1,5 @@
+using Frame.Module;
+using Frame.Stage;
 using Godot;
 
 namespace Frame
@@ -15,6 +17,8 @@ namespace Frame
         {
             FormRoot = GetNode<CanvasLayer>(nameof(FormRoot));
             EntityRoot = GetNode<Node>(nameof(EntityRoot));
+            
+            StageModule.ChangeStage<StagePreload>();
         }
     }
 }

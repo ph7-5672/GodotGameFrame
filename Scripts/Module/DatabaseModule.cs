@@ -6,7 +6,7 @@ using Godot;
 
 namespace Frame.Module
 {
-    public partial class DatabaseModule : Singleton<DatabaseModule>
+    public class DatabaseModule : Singleton<DatabaseModule>
     {
 
         private readonly Dictionary<string, List<IData>> database = new Dictionary<string, List<IData>>();
