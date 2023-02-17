@@ -1,7 +1,8 @@
+using Godot;
 
 namespace Frame.Common
 {
-    public class Singleton<T> where T : Singleton<T>, new()
+    public class Singleton<T> : Object where T : Singleton<T>, new()
     {
         private static T instance;
 
