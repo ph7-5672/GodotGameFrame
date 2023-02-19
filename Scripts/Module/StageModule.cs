@@ -23,8 +23,6 @@ namespace Frame.Module
             Current = BaseStage<T>.Instance;
             Current.OnEnter();
         }
-        
-        
 
     }
 }

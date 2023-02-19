@@ -49,6 +49,16 @@ namespace Frame.Module
             return instance;
         }
 
+        /// <summary>
+        /// 加载场景。
+        /// </summary>
+        /// <param name="sceneType"></param>
+        /// <returns></returns>
+        public static Node LoadScene(SceneType sceneType)
+        {
+            return LoadInstance<Node>($"Scenes/{sceneType.ToString()}", GameFrame.SceneRoot);
+        }
+
 
     }
 }

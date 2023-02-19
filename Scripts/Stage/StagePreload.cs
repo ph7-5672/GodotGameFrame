@@ -1,7 +1,5 @@
 using Frame.Common;
-using Frame.Entity;
 using Frame.Module;
-using Godot;
 
 namespace Frame.Stage
 {
@@ -10,6 +8,8 @@ namespace Frame.Stage
         
         public override void OnEnter()
         {
+            SceneModule.LoadScene(SceneType.Test);
+            EntityModule.Spawn(EntityType.Player);
         }
 
     }

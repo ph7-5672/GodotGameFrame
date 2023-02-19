@@ -1,19 +1,10 @@
 namespace Frame.Common
 {
-    public interface IEntity
-    {
-        /// <summary>
-        /// 唯一标识。
-        /// </summary>
-        int Unique { get; set; }
-    }
-    
     /// <summary>
     /// 实体组件。
     /// </summary>
     public interface IEntityComponent
     {
-        
     }
 
     public interface IEventArgs
@@ -25,8 +16,6 @@ namespace Frame.Common
         void OnEnter();
 
         void OnExit();
-
-        void OnProcess();
     }
     
     public interface IData

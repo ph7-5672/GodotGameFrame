@@ -12,9 +12,5 @@ namespace Frame.Stage
         public virtual void OnExit()
         {
         }
-
-        public virtual void OnProcess()
-        {
-        }
     }
 }

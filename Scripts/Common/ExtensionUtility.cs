@@ -20,5 +20,33 @@ namespace Frame.Common
             return result;
         }
 
+
+        public static T GetComponent<T>(this Node2D entity) where T : IEntityComponent
+        {
+            foreach (var child in entity.GetChildren())
+            {
+                if (child is T component)
+                {
+                    return component;
+                }
+            }
+
+            return default;
+        }
+
+
+        public static bool IsEntity(this Node node)
+        {
+            return node.Name.StartsWith("Entity-");
+        }
+
+
+        public static Vector2 ToWorldPoint(this Vector2 viewportPosition, Transform2D canvasTransform)
+        {
+            var affineInverse = canvasTransform.AffineInverse();
+            var halfScreen = new Transform2D().Translated(viewportPosition);
+            return affineInverse * halfScreen * Vector2.Zero;
+        }
+
     }
 }

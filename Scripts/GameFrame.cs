@@ -13,10 +13,13 @@ namespace Frame
 
         public static Node EntityRoot { get; private set; }
 
+        public static Node SceneRoot { get; private set; }
+
         public override void _Ready()
         {
             FormRoot = GetNode<CanvasLayer>(nameof(FormRoot));
             EntityRoot = GetNode<Node>(nameof(EntityRoot));
+            SceneRoot = GetNode<Node>(nameof(SceneRoot));
             
             StageModule.ChangeStage<StagePreload>();
         }
