@@ -14,16 +14,15 @@ namespace Frame.Entity
         public override void _Ready()
         {
             base._Ready();
-            EventModule.Subscribe<MouseInputEvent>(OnMouseInput, entity);
+            EventModule.Subscribe<MouseInputEvent>(OnMouseInput, Entity);
         }
 
         private void OnMouseInput(object sender, MouseInputEvent e)
         {
             if (e.fire)
             {
-                var globalMousePosition = entity.GetGlobalMousePosition();
-                var direction = globalMousePosition - entity.Position;
-                GD.Print(globalMousePosition);
+                var globalMousePosition = Entity.GetGlobalMousePosition();
+                var direction = globalMousePosition - Entity.Position;
                 if (direction != Vector2.Zero)
                 {
                     orientation = direction.Normalized();
@@ -31,7 +30,7 @@ namespace Frame.Entity
                 
                 var bullet = EntityModule.Spawn(EntityType.Bullet);
                 // 初始化子弹位置。
-                bullet.Position = entity.Position;
+                bullet.Position = Entity.Position;
                 EventModule.Send(new ActionInputEvent(orientation), bullet);
             }
         }

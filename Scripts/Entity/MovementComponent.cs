@@ -1,6 +1,7 @@
 using System;
 using Frame.Common;
 using Frame.Module;
+using Frame.Stage;
 using Godot;
 
 namespace Frame.Entity
@@ -89,7 +90,7 @@ namespace Frame.Entity
             speed.basic = defaultSpeed;
             bounce.basic = defaultBounce;
             
-            EventModule.Subscribe<ActionInputEvent>(OnActionInput, entity);
+            EventModule.Subscribe<ActionInputEvent>(OnActionInput, Entity);
         }
 
         void OnActionInput(object sender, ActionInputEvent eventArgs)
@@ -138,9 +139,9 @@ namespace Frame.Entity
             if (moveMode == EntityMoveMode.Translate)
             {
                 var translation = velocity * speed.final * 60f;
-                entity.Translate(translation * delta);
+                Entity.Translate(translation * delta);
             }
-            else if (entity is KinematicBody2D kinematicBody2D)
+            else if (Entity is KinematicBody2D kinematicBody2D)
             {
                 var gravity = Constants.gravity * delta * gravityScale;
                 velocity.y += gravity;
@@ -170,7 +171,7 @@ namespace Frame.Entity
         /// </summary>
         void OnFloorCheck()
         {
-            if (entity is KinematicBody2D kinematicBody2D)
+            if (Entity is KinematicBody2D kinematicBody2D)
             {
                 IsOnFloor = kinematicBody2D.IsOnFloor();
                 if (IsOnFloor)

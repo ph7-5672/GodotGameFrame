@@ -14,10 +14,10 @@ namespace Frame.Entity
                 y = Input.GetActionStrength("ui_down") - Input.GetActionStrength("ui_up")
             };
 
-            EventModule.Send(new ActionInputEvent(arrow), entity);
+            EventModule.Send(new ActionInputEvent(arrow), Entity);
             
             var fire = Input.IsActionPressed("fire");
-            EventModule.Send(new MouseInputEvent(fire), entity);
+            EventModule.Send(new MouseInputEvent(fire), Entity);
         }
     }
 }

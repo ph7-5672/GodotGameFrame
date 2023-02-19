@@ -1,3 +1,4 @@
+using Frame.Common;
 using Frame.Module;
 using Frame.Stage;
 using Godot;
@@ -14,7 +15,7 @@ namespace Frame
         public static Node EntityRoot { get; private set; }
 
         public static Node SceneRoot { get; private set; }
-
+        
         public override void _Ready()
         {
             FormRoot = GetNode<CanvasLayer>(nameof(FormRoot));

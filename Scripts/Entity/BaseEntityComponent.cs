@@ -5,11 +5,12 @@ namespace Frame.Entity
 {
     public class BaseEntityComponent : Node, IEntityComponent
     {
-        protected Node2D entity;
-        
+        public Node2D Entity { get; private set; }
+
         public override void _Ready()
         {
-            entity = GetParent<Node2D>();
+            Entity = GetParent<Node2D>();
         }
+
     }
 }

@@ -8,7 +8,7 @@ namespace Frame.Entity
     {
         public override void _Process(float delta)
         {
-            EventModule.Send(new ActionInputEvent(new Vector2(1f, 0f)), entity);
+            EventModule.Send(new ActionInputEvent(new Vector2(1f, 0f)), Entity);
         }
     }
 }
