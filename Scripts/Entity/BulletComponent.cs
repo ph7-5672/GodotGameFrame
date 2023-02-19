@@ -9,16 +9,40 @@ namespace Frame.Entity
     /// </summary>
     public class BulletComponent : BaseEntityComponent
     {
+        public float range;
+
+        private Area2D area;
+        
         public override void _Ready()
         {
             base._Ready();
-            // 连接信号。
-            Entity.Connect("body_entered", this, nameof(OnBodyEntered));
+            
+            EventModule.Subscribe<DistanceChangeEvent>(OnDistanceChange, Entity);
+
+            area = Entity as Area2D;
         }
 
-        protected override void Dispose(bool disposing)
+        private void OnDistanceChange(object sender, DistanceChangeEvent e)
         {
-            Entity.Disconnect("body_entered", this, nameof(OnBodyEntered));
+            // 移动距离超过射程后销毁子弹。
+            if (e.current >= range)
+            {
+                EntityModule.Kill(Entity);
+            }
+        }
+
+        public override void _Process(float delta)
+        {
+            var bodies = area.GetOverlappingBodies();
+            foreach (Node2D body in bodies)
+            {
+                var zombie = body?.GetComponent<ZombieComponent>();
+                if (zombie != null)
+                {
+                    EntityModule.Kill(Entity);
+                    EntityModule.Kill(zombie.Entity);
+                }
+            }
         }
 
         void OnBodyEntered(Node body)
@@ -32,7 +56,6 @@ namespace Frame.Entity
                     EntityModule.Kill(zombie.Entity);
                 }
             }
-
         }
         
         

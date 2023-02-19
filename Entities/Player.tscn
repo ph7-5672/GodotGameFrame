@@ -29,6 +29,7 @@ moveMode = 3
 
 [node name="Shooter" type="Node" parent="."]
 script = ExtResource( 4 )
+defaultRange = 100.0
 
 [node name="Camera2D" type="Camera2D" parent="."]
 current = true

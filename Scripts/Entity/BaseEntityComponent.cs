@@ -12,5 +12,8 @@ namespace Frame.Entity
             Entity = GetParent<Node2D>();
         }
 
+        public virtual void Reset()
+        {
+        }
     }
 }

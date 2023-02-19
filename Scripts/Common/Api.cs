@@ -5,6 +5,7 @@ namespace Frame.Common
     /// </summary>
     public interface IEntityComponent
     {
+        void Reset();
     }
 
     public interface IEventArgs

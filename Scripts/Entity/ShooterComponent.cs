@@ -7,6 +7,24 @@ namespace Frame.Entity
     public class ShooterComponent : BaseEntityComponent
     {
         /// <summary>
+        /// 默认射击范围。
+        /// </summary>
+        [Export]
+        public float defaultRange;
+        
+        /// <summary>
+        /// 射击范围。
+        /// </summary>
+        private Value range;
+
+
+        public Value Range
+        {
+            get => range;
+            set => Entity.SetValue(nameof(range), ref range, value);
+        }
+
+        /// <summary>
         /// 朝向。
         /// </summary>
         private Vector2 orientation;
@@ -15,6 +33,8 @@ namespace Frame.Entity
         {
             base._Ready();
             EventModule.Subscribe<MouseInputEvent>(OnMouseInput, Entity);
+
+            Range = new Value(defaultRange);
         }
 
         private void OnMouseInput(object sender, MouseInputEvent e)
@@ -28,9 +48,9 @@ namespace Frame.Entity
                     orientation = direction.Normalized();
                 }
                 
-                var bullet = EntityModule.Spawn(EntityType.Bullet);
-                // 初始化子弹位置。
-                bullet.Position = Entity.Position;
+                var bullet = EntityModule.Spawn(EntityType.Bullet, Entity.Position);
+                var bulletComponent = bullet.GetComponent<BulletComponent>();
+                bulletComponent.range = range.final;
                 EventModule.Send(new ActionInputEvent(orientation), bullet);
             }
         }

@@ -39,4 +39,19 @@ namespace Frame.Common
         }
     }
 
+
+
+    public readonly struct DistanceChangeEvent : IEventArgs
+    {
+        public readonly float origin;
+
+        public readonly float current;
+
+        public DistanceChangeEvent(float origin, float current)
+        {
+            this.origin = origin;
+            this.current = current;
+        }
+    }
+
 }

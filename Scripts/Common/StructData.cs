@@ -39,6 +39,11 @@ namespace Frame.Common
             return new Value(basic, addition, multiple);
         }
 
+
+        public static bool operator ==(Value val1, Value val2) => val1.Equals(val2);
+
+        public static bool operator !=(Value val1, Value val2) => !(val1 == val2);
+
         public static Value Zero => new Value();
 
     }

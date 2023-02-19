@@ -41,6 +41,24 @@ namespace Frame.Common
         }
 
 
+        public static EntityType GetEntityType(this Node2D entity)
+        {
+            var split = entity.Name.Split('-');
+            var typeName = split[1];
+            return (EntityType) Enum.Parse(typeof(EntityType), typeName);
+        }
+
+
+        public static void SetValue(this Node entity, string valueName, ref Value value, Value change)
+        {
+            if (value != change)
+            {
+                var origin = value;
+                value = change;
+                EventModule.Send(new ValueChangeEvent(valueName, origin, change), entity);
+            }
+        }
+
         public static Vector2 ToWorldPoint(this Vector2 viewportPosition, Transform2D canvasTransform)
         {
             var affineInverse = canvasTransform.AffineInverse();

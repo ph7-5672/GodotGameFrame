@@ -50,12 +50,7 @@ namespace Frame.Entity
         public Value Speed
         {
             get => speed;
-            set
-            {
-                var origin = speed;
-                speed = value;
-                EventModule.Send(new ValueChangeEvent(nameof(speed), origin, speed), GetParent());
-            }
+            set => Entity.SetValue(nameof(speed), ref speed, value);
         }
 
         private Value bounce;
@@ -66,19 +61,31 @@ namespace Frame.Entity
         public Value Bounce 
         { 
             get => bounce;
-            set
-            {
-                var origin = bounce;
-                bounce = value;
-                EventModule.Send(new ValueChangeEvent(nameof(bounce), origin, bounce), GetParent());
-            } 
+            set => Entity.SetValue(nameof(bounce), ref bounce, value);
         }
 
         /// <summary>
         /// 是否接触地板。
         /// </summary>
         public bool IsOnFloor { get; private set; }
+
+
+        private float distance;
         
+        /// <summary>
+        /// 走过的距离。
+        /// </summary>
+        public float Distance
+        {
+            get => distance;
+            private set
+            {
+                var origin = distance;
+                distance = value;
+                EventModule.Send(new DistanceChangeEvent(origin, value), Entity);
+            }
+        }
+
 
         private Vector2 velocity;
         
@@ -89,6 +96,8 @@ namespace Frame.Entity
             base._Ready();
             speed.basic = defaultSpeed;
             bounce.basic = defaultBounce;
+
+            distance = 0f;
             
             EventModule.Subscribe<ActionInputEvent>(OnActionInput, Entity);
         }
@@ -110,8 +119,7 @@ namespace Frame.Entity
                 }
                 
                 case ResponseInputMode.TopView:
-                    velocity.x = eventArgs.arrow.x;
-                    velocity.y = eventArgs.arrow.y;
+                    velocity = eventArgs.arrow;
                     
                     break;
             }
@@ -138,8 +146,11 @@ namespace Frame.Entity
         {
             if (moveMode == EntityMoveMode.Translate)
             {
-                var translation = velocity * speed.final * 60f;
-                Entity.Translate(translation * delta);
+                var translation = velocity * speed.final * 60f * delta;
+                Entity.Translate(translation);
+
+                Distance += translation.Length();
+
             }
             else if (Entity is KinematicBody2D kinematicBody2D)
             {
@@ -161,6 +172,8 @@ namespace Frame.Entity
                         kinematicBody2D.MoveAndSlideWithSnap(translation, snap, Vector2.Up, true);
                         break;
                 }
+
+                Distance += (translation * delta).Length();
             }
 
             
@@ -182,6 +195,11 @@ namespace Frame.Entity
             }
         }
 
+        public override void Reset()
+        {
+            distance = 0f;
+            velocity = Vector2.Zero;
+        }
 
         public override void _PhysicsProcess(float delta)
         {
