@@ -6,7 +6,7 @@ namespace Frame.Module
     /// <summary>
     /// 阶段模块。
     /// </summary>
-    public class StageModule : Singleton<StageModule>
+    public class ModuleStage : Singleton<ModuleStage>
     {
 
         private IStage current;
@@ -17,10 +17,10 @@ namespace Frame.Module
             private set => Instance.current = value;
         }
 
-        public static void ChangeStage<T>() where T : BaseStage<T>, new()
+        public static void ChangeStage<T>() where T : StageBase<T>, new()
         {
             Current?.OnExit();
-            Current = BaseStage<T>.Instance;
+            Current = StageBase<T>.Instance;
             Current.OnEnter();
         }
 

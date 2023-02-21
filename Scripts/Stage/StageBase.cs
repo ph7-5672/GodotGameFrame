@@ -2,7 +2,7 @@ using Frame.Common;
 
 namespace Frame.Stage
 {
-    public class BaseStage<T> : Singleton<T>, IStage where T : Singleton<T>, new()
+    public class StageBase<T> : Singleton<T>, IStage where T : Singleton<T>, new()
     {
         
         public virtual void OnEnter()

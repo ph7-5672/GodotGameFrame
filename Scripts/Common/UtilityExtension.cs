@@ -5,7 +5,7 @@ using Godot;
 
 namespace Frame.Common
 {
-    public static class ExtensionUtility
+    public static class UtilityExtension
     {
         public static List<Node> GetComponents(this Node2D entity)
         {
@@ -49,21 +49,9 @@ namespace Frame.Common
         }
 
 
-        public static void SetValue(this Node entity, string valueName, ref Value value, Value change)
+        public static void SendEvent<T>(this object sender, T eventArgs) where T : struct, IEventArgs
         {
-            if (value != change)
-            {
-                var origin = value;
-                value = change;
-                EventModule.Send(new ValueChangeEvent(valueName, origin, change), entity);
-            }
-        }
-
-        public static Vector2 ToWorldPoint(this Vector2 viewportPosition, Transform2D canvasTransform)
-        {
-            var affineInverse = canvasTransform.AffineInverse();
-            var halfScreen = new Transform2D().Translated(viewportPosition);
-            return affineInverse * halfScreen * Vector2.Zero;
+            ModuleEvent.Send(eventArgs, sender);
         }
 
     }

@@ -25,7 +25,7 @@ namespace Frame
             EntityRoot = GetNode<Node>(nameof(EntityRoot));
             SceneRoot = GetNode<Node>(nameof(SceneRoot));
             
-            StageModule.ChangeStage<StagePreload>();
+            ModuleStage.ChangeStage<StagePreload>();
         }
     }
 }

@@ -1,57 +1,72 @@
 using Godot;
+using Godot.Collections;
 
 namespace Frame.Common
 {
 
-    public readonly struct ActionInputEvent : IEventArgs
+    public readonly struct EventArrowInput : IEventArgs
     {
         public readonly Vector2 arrow;
 
-        public ActionInputEvent(Vector2 arrow)
+        public EventArrowInput(Vector2 arrow)
         {
             this.arrow = arrow;
         }
     }
 
-    public readonly struct MouseInputEvent : IEventArgs
+    public readonly struct EventMouseInput : IEventArgs
     {
-        public readonly bool fire;
+        /// <summary>
+        /// 布尔数组表示鼠标按键的状态。
+        /// fire[对应鼠标键]取值，true代表按下。
+        /// </summary>
+        public readonly bool[] fire;
 
-        public MouseInputEvent(bool fire)
+        public EventMouseInput(bool[] fire)
         {
             this.fire = fire;
         }
     }
 
-    public readonly struct ValueChangeEvent : IEventArgs
+
+    public readonly struct EventActionInput : IEventArgs
     {
-        public readonly string valueName;
+        public readonly bool[] action;
+
+        public EventActionInput(bool[] action)
+        {
+            this.action = action;
+        }
+    }
+
+    /// <summary>
+    /// 数值更新。
+    /// </summary>
+    public readonly struct EventValueUpdate : IEventArgs
+    {
+        public readonly string name;
         
-        public readonly Value origin;
+        public readonly Value value;
 
-        public readonly Value current;
-
-        public ValueChangeEvent(string valueName, Value origin, Value current)
+        public EventValueUpdate(string name, Value value)
         {
-            this.valueName = valueName;
-            this.origin = origin;
-            this.current = current;
+            this.name = name;
+            this.value = value;
         }
     }
 
-
-
-    public readonly struct DistanceChangeEvent : IEventArgs
+    /// <summary>
+    /// 移动射线检测。
+    /// </summary>
+    public readonly struct EventMoverRaycast : IEventArgs
     {
-        public readonly float origin;
+        public readonly Dictionary results;
 
-        public readonly float current;
-
-        public DistanceChangeEvent(float origin, float current)
+        public EventMoverRaycast(Dictionary results)
         {
-            this.origin = origin;
-            this.current = current;
+            this.results = results;
         }
     }
+
 
 }

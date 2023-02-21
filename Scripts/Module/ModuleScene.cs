@@ -5,7 +5,7 @@ using Godot.Collections;
 
 namespace Frame.Module
 {
-    public class SceneModule : Singleton<SceneModule>
+    public class ModuleScene : Singleton<ModuleScene>
     {
     
         private readonly Dictionary<string, PackedScene> scenesCache = new Dictionary<string, PackedScene>();

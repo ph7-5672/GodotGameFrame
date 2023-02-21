@@ -4,11 +4,13 @@ using Godot;
 
 namespace Frame.Entity
 {
-    public class ZombieComponent : BaseEntityComponent
+    public class Zombie : EntityComponentBase<KinematicBody2D>
     {
+        
+
         public override void _Process(float delta)
         {
-            EventModule.Send(new ActionInputEvent(new Vector2(1f, 0f)), Entity);
+            ModuleEvent.Send(new EventArrowInput(new Vector2(1f, 0f)), Entity);
         }
     }
 }

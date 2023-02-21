@@ -3,13 +3,13 @@ using Frame.Module;
 
 namespace Frame.Stage
 {
-    public class StagePreload : BaseStage<StagePreload>
+    public class StagePreload : StageBase<StagePreload>
     {
         
         public override void OnEnter()
         {
-            SceneModule.LoadScene(SceneType.Test);
-            EntityModule.Spawn(EntityType.Player);
+            ModuleScene.LoadScene(SceneType.Test);
+            ModuleEntity.Spawn(EntityType.Player);
         }
 
     }

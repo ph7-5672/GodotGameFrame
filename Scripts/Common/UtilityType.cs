@@ -2,7 +2,7 @@ using System;
 
 namespace Frame.Common
 {
-    public static class TypeUtility
+    public static class UtilityType
     {
         public static bool SetValue(this object obj, string key, object value)
         {

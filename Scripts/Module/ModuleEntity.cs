@@ -6,7 +6,7 @@ using Godot;
 
 namespace Frame.Module
 {
-    public class EntityModule : Singleton<EntityModule>
+    public class ModuleEntity : Singleton<ModuleEntity>
     {
 
         /// <summary>
@@ -25,7 +25,7 @@ namespace Frame.Module
             else
             {
                 var name = entityType.ToString();
-                entity = SceneModule.LoadInstance<Node2D>($"Entities/{name}", GameFrame.EntityRoot);
+                entity = ModuleScene.LoadInstance<Node2D>($"Entities/{name}", GameFrame.EntityRoot);
             }
             entity.Name = $"Entity-{entityType}-{Guid.NewGuid()}";
             entity.Position = position;

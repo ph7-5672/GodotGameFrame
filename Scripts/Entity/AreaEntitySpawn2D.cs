@@ -8,7 +8,7 @@ namespace Frame.Entity
     /// <summary>
     /// 实体生成区域。
     /// </summary>
-    public class EntitySpawnArea : Area2D
+    public class AreaEntitySpawn2D : Area2D
     {
         /// <summary>
         /// 需要生成的实体类型。
@@ -87,7 +87,7 @@ namespace Frame.Entity
 
             for (var i = 0; i < count; i++)
             {
-                EntityModule.Spawn(entityType);
+                ModuleEntity.Spawn(entityType);
             }
             spawnedCount += count;
             ++spawnedTimes;

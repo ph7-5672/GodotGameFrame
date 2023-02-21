@@ -5,7 +5,7 @@ using Godot;
 namespace Frame.Module
 {
     
-    public class EventModule : Singleton<EventModule>
+    public class ModuleEvent : Singleton<ModuleEvent>
     {
         /// <summary>
         /// 订阅事件和发布者。

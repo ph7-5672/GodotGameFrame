@@ -3,7 +3,7 @@ using Godot;
 
 namespace Frame.Module
 {
-    public class FormModule : Singleton<FormModule>
+    public class ModuleForm : Singleton<ModuleForm>
     {
         /// <summary>
         /// 打开指定类型的用户界面。
@@ -14,7 +14,7 @@ namespace Frame.Module
         public static Node Open<T>(FormType formType) where T : CanvasItem
         {
             var name = formType.ToString();
-            var instance = SceneModule.LoadInstance<T>($"Forms/{name}", GameFrame.FormRoot);
+            var instance = ModuleScene.LoadInstance<T>($"Forms/{name}", GameFrame.FormRoot);
             return instance;
         }
 
