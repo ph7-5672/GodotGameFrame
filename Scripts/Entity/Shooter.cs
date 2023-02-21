@@ -12,6 +12,13 @@ namespace Frame.Entity
         
         [Export]
         public float defaultRange;
+
+        /// <summary>
+        /// 子弹生效对象层级。
+        /// </summary>
+        [Export(PropertyHint.Layers2dPhysics)]
+        public uint shootLayer;
+        
         
         protected Value interval;
         
@@ -87,6 +94,7 @@ namespace Frame.Entity
             bullet.SendEvent(new EventArrowInput(orientation));
             bullet.SendEvent(new EventValueUpdate("range", range));
             bullet.SendEvent(new EventValueUpdate("speed", new Value(100f))); // TODO 配置子弹速度。
+            bullet.SendEvent(new EventValueUpdate("raycastLayer", new Value(shootLayer))); // TODO 射击对象由武器决定。
         }
 
 

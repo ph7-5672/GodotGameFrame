@@ -8,7 +8,7 @@ namespace Frame.Entity
     /// <summary>
     /// 实体生成区域。
     /// </summary>
-    public class AreaEntitySpawn2D : Area2D
+    public class AreaEntitySpawn2D : Control
     {
         /// <summary>
         /// 需要生成的实体类型。
@@ -46,7 +46,7 @@ namespace Frame.Entity
         [Export]
         public float interval;
         
-        private float currentTime;
+        private float tick;
 
         /// <summary>
         /// 已经生成的数量。
@@ -58,9 +58,10 @@ namespace Frame.Entity
         /// </summary>
         private int spawnedTimes;
         
-        private bool canSpawn => currentTime == 0 
-                                       && spawnedCount < globalMaxCount 
-                                       && spawnedTimes < globalMaxTimes;
+        private bool canSpawn => 
+            tick == 0 
+            && spawnedCount < globalMaxCount 
+            && spawnedTimes < globalMaxTimes;
 
         public override void _Process(float delta)
         {
@@ -68,11 +69,11 @@ namespace Frame.Entity
             {
                 Spawn();
             }
-
-            Time(delta);
+            
+            Tick(delta);
         }
 
-        readonly Random random = new Random();
+        static readonly Random random = new Random();
         
         void Spawn()
         {
@@ -87,7 +88,9 @@ namespace Frame.Entity
 
             for (var i = 0; i < count; i++)
             {
-                ModuleEntity.Spawn(entityType);
+                // 取随机位置。
+                var randomPosition = GetRandomPosition();
+                ModuleEntity.Spawn(entityType, randomPosition);
             }
             spawnedCount += count;
             ++spawnedTimes;
@@ -96,15 +99,23 @@ namespace Frame.Entity
         /// <summary>
         /// 计时。
         /// </summary>
-        void Time(float delta)
+        void Tick(float delta)
         {
-            currentTime += delta;
-            if (currentTime >= interval)
+            tick += delta;
+            if (tick >= interval)
             {
-                currentTime = 0f;
+                tick = 0f;
             }
         }
         
-        
+        Vector2 GetRandomPosition()
+        {
+            var min = RectPosition;
+            var max = min + RectSize;
+            var x = random.Next((int)min.x, (int)max.x);
+            var y = random.Next((int)min.y, (int)max.y);
+            return new Vector2(x, y);
+        }
+
     }
 }

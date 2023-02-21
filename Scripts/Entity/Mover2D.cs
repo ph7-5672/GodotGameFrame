@@ -20,6 +20,12 @@ namespace Frame.Entity
         /// </summary>
         [Export]
         public bool enableRaycast;
+
+        /// <summary>
+        /// 射线检测的层级。
+        /// </summary>
+        [Export(PropertyHint.Layers2dPhysics)]
+        public uint raycastLayer;
         
         protected Vector2 velocity;
 
@@ -57,6 +63,11 @@ namespace Frame.Entity
             {
                 speed = e.value;
             }
+
+            if (nameof(raycastLayer).Equals(e.name))
+            {
+                raycastLayer = (uint) e.value.intFinal;
+            }
         }
         
         protected virtual void Translate(float delta)
@@ -70,16 +81,14 @@ namespace Frame.Entity
             if (enableRaycast)
             {
                 var translation = velocity * speed.final * delta * Constants.unitMeter;
-                var spaceState = Entity.GetWorld2d().DirectSpaceState;
                 var from = Entity.Position;
                 var to = from + translation;
                 var exclude = new Array(Entity);
-                var results = spaceState.IntersectRay(from, to, exclude);
-                if (results != null && results.Count > 0)
+                var result = Entity.Raycast2D(from, to, exclude, raycastLayer);
+                if (result.Count > 0)
                 {
-                    Entity.SendEvent(new EventMoverRaycast(results));
+                    Entity.SendEvent(new EventMoverRaycast(result));
                 }
-
                 
             }
         }

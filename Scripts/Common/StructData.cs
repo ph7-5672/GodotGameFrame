@@ -44,6 +44,16 @@ namespace Frame.Common
 
         public static bool operator !=(Value val1, Value val2) => !(val1 == val2);
 
+        public override bool Equals(object obj)
+        {
+            return base.Equals(obj);
+        }
+
+        public override int GetHashCode()
+        {
+            return base.GetHashCode();
+        }
+
         public static Value Zero => new Value();
 
     }

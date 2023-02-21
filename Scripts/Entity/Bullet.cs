@@ -43,16 +43,12 @@ namespace Frame.Entity
 
         protected void OnMoverRaycast(object sender, EventMoverRaycast e)
         {
-            var collider = e.results["collider"];
             // TODO 根据阵营判断。
-            if (collider is Node2D entity)
+            var collider = e.collider;
+            if (collider.HasComponent<Zombie>())
             {
-                var zombie = entity.GetComponent<Zombie>();
-                if (zombie != null)
-                {
-                    ModuleEntity.Kill(Entity);
-                    ModuleEntity.Kill(zombie.Entity);
-                }
+                ModuleEntity.Kill(Entity);
+                ModuleEntity.Kill(collider);
             }
         }
 

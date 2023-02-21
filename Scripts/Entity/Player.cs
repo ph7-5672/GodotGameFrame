@@ -3,7 +3,7 @@ using Godot;
 
 namespace Frame.Entity
 {
-    public class Player : EntityComponentBase<KinematicBody2D>
+    public class Player : EntityComponentBase<Node2D>
     {
         public override void _Process(float delta)
         {

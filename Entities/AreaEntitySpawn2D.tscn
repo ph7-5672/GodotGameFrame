@@ -1,11 +1,11 @@
-[gd_scene load_steps=3 format=2]
+[gd_scene load_steps=2 format=2]
 
 [ext_resource path="res://Scripts/Entity/AreaEntitySpawn2D.cs" type="Script" id=1]
 
-[sub_resource type="RectangleShape2D" id=1]
-
-[node name="Area2D" type="Area2D"]
+[node name="AreaEntitySpawn2D" type="Control"]
 script = ExtResource( 1 )
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
-shape = SubResource( 1 )
+singleMinCount = 1
+singleMaxCount = 2
+globalMaxCount = 50
+globalMaxTimes = 50
+interval = 2.0

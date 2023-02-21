@@ -21,17 +21,17 @@ namespace Frame.Common
         }
 
 
-        public static T GetComponent<T>(this Node2D entity) where T : IEntityComponent
+        public static bool HasComponent<T>(this Node2D entity) where T : IEntityComponent
         {
             foreach (var child in entity.GetChildren())
             {
                 if (child is T component)
                 {
-                    return component;
+                    return true;
                 }
             }
 
-            return default;
+            return false;
         }
 
 
@@ -54,5 +54,19 @@ namespace Frame.Common
             ModuleEvent.Send(eventArgs, sender);
         }
 
+        /// <summary>
+        /// 射线检测所有实体。
+        /// </summary>
+        /// <param name="entity"></param>
+        /// <param name="from"></param>
+        /// <param name="to"></param>
+        /// <param name="exclude"></param>
+        /// <returns></returns>
+        public static Godot.Collections.Dictionary Raycast2D(this Node2D entity, Vector2 from, Vector2 to, Godot.Collections.Array exclude, uint collisionLayer = 2147483647)
+        {
+            var spaceState = entity.GetWorld2d().DirectSpaceState;
+            return spaceState.IntersectRay(from, to, exclude, collisionLayer);
+
+        }
     }
 }

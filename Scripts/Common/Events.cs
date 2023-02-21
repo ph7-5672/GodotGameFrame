@@ -1,3 +1,4 @@
+using System.Collections;
 using Godot;
 using Godot.Collections;
 
@@ -60,11 +61,31 @@ namespace Frame.Common
     /// </summary>
     public readonly struct EventMoverRaycast : IEventArgs
     {
-        public readonly Dictionary results;
+        public readonly Vector2 position;
+        public readonly Vector2 normal;
+        public readonly int collider_id;
+        public readonly Node2D collider;
+        public readonly RID rid;
+        public readonly object metadata;
 
-        public EventMoverRaycast(Dictionary results)
+        public EventMoverRaycast(Vector2 position, Vector2 normal, int collider_id, CollisionObject2D collider, RID rid, object metadata)
         {
-            this.results = results;
+            this.position = position;
+            this.normal = normal;
+            this.collider_id = collider_id;
+            this.collider = collider;
+            this.rid = rid;
+            this.metadata = metadata;
+        }
+
+        public EventMoverRaycast(IDictionary dictionary) : this()
+        {
+            position = (Vector2) dictionary[nameof(position)];
+            normal = (Vector2) dictionary[nameof(normal)];
+            collider_id = (int) dictionary[nameof(collider_id)];
+            collider = (Node2D) dictionary[nameof(collider)];
+            rid = (RID) dictionary[nameof(rid)];
+            metadata =  dictionary[nameof(metadata)];
         }
     }
 

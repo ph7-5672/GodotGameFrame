@@ -2,7 +2,7 @@ using Godot;
 
 namespace Frame.Form
 {
-    public class LogoForm : Control
+    public class FormLogo : Control
     {
         //
     }
