@@ -1,7 +1,6 @@
 using Frame.Common;
 using Frame.Module;
 using Godot;
-using Timer = System.Timers.Timer;
 
 namespace Frame.Entity
 {
@@ -28,7 +27,6 @@ namespace Frame.Entity
         [Export(PropertyHint.Layers2dPhysics)]
         public uint shootLayer;
         
-        
         protected Value interval;
         
         protected Value range;
@@ -36,18 +34,12 @@ namespace Frame.Entity
         protected Value clipSize;
 
         protected Value reloadTime;
-        
-        
+
         /// <summary>
         /// 朝向。
         /// </summary>
         protected Vector2 orientation;
         
-        /// <summary>
-        /// 冷却时间读秒。
-        /// </summary>
-        protected float coolTick;
-
         /// <summary>
         /// 是否冷却中。
         /// </summary>
@@ -59,17 +51,9 @@ namespace Frame.Entity
         protected int bulletCount;
         
         /// <summary>
-        /// 换弹读秒。
-        /// </summary>
-        protected float reloadTick;
-
-        /// <summary>
         /// 是否换弹中。
         /// </summary>
         protected bool isReloading;
-
-        
-        protected Timer reloadTimer;
 
         /// <summary>
         /// 射击间隔。
@@ -91,8 +75,7 @@ namespace Frame.Entity
         /// </summary>
         public Value ReloadTime => reloadTime;
 
-
-        public float ReloadProgress => reloadTick / reloadTime.final;
+        
         
         public override void Reset()
         {
@@ -102,7 +85,6 @@ namespace Frame.Entity
             clipSize = Value.Zero;
             reloadTime = Value.Zero;
             orientation = Vector2.Zero;
-            coolTick = 0f;
             isCooling = false;
 
             interval.basic = defaultInterval;
@@ -164,17 +146,17 @@ namespace Frame.Entity
             
             // 根据鼠标位置获取方向。
             var globalMousePosition = Entity.GetGlobalMousePosition();
-            var direction = globalMousePosition - Entity.Position;
+            var direction = globalMousePosition - Entity.GlobalPosition;
             if (direction != Vector2.Zero)
             {
                 orientation = direction.Normalized();
             }
             
             // 生成子弹实体，并控制它的方向和速度。
-            var bullet = ModuleEntity.Spawn(EntityType.Bullet, Entity.Position);
+            var bullet = ModuleEntity.Spawn(EntityType.Bullet, Entity.GlobalPosition);
             bullet.SendEvent(new EventArrowInput(orientation));
             bullet.SendEvent(new EventValueUpdate("movedRange", range));
-            bullet.SendEvent(new EventValueUpdate("speed", new Value(50f))); // TODO 配置子弹速度。
+            bullet.SendEvent(new EventValueUpdate("speed", new Value(40f))); // TODO 配置子弹速度。
             bullet.SendEvent(new EventValueUpdate("raycastLayer", new Value(shootLayer)));
 
             --bulletCount;

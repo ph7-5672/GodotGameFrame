@@ -61,12 +61,13 @@ namespace Frame.Common
         }
 
         /// <summary>
-        /// 射线检测所有实体。
+        /// 射线检测第一个实体。
         /// </summary>
         /// <param name="entity"></param>
         /// <param name="from"></param>
         /// <param name="to"></param>
         /// <param name="exclude"></param>
+        /// <param name="collisionLayer"></param>
         /// <returns></returns>
         public static Godot.Collections.Dictionary Raycast2D(this Node2D entity, Vector2 from, Vector2 to, Godot.Collections.Array exclude, uint collisionLayer = 2147483647)
         {
