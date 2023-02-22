@@ -1,10 +1,13 @@
-using System.Threading;
 using Frame.Common;
 using Frame.Module;
 using Godot;
+using Timer = System.Timers.Timer;
 
 namespace Frame.Entity
 {
+    /// <summary>
+    /// 一个shooter对应一把武器。
+    /// </summary>
     public class Shooter : EntityComponentBase<KinematicBody2D>
     {
         [Export]
@@ -12,6 +15,12 @@ namespace Frame.Entity
         
         [Export]
         public float defaultRange;
+
+        [Export]
+        public float defaultClipSize;
+
+        [Export]
+        public float defaultReloadTime;
 
         /// <summary>
         /// 子弹生效对象层级。
@@ -24,6 +33,11 @@ namespace Frame.Entity
         
         protected Value range;
 
+        protected Value clipSize;
+
+        protected Value reloadTime;
+        
+        
         /// <summary>
         /// 朝向。
         /// </summary>
@@ -32,12 +46,30 @@ namespace Frame.Entity
         /// <summary>
         /// 冷却时间读秒。
         /// </summary>
-        protected float coolTime;
+        protected float coolTick;
 
         /// <summary>
         /// 是否冷却中。
         /// </summary>
         protected bool isCooling;
+
+        /// <summary>
+        /// 剩余子弹数量。
+        /// </summary>
+        protected int bulletCount;
+        
+        /// <summary>
+        /// 换弹读秒。
+        /// </summary>
+        protected float reloadTick;
+
+        /// <summary>
+        /// 是否换弹中。
+        /// </summary>
+        protected bool isReloading;
+
+        
+        protected Timer reloadTimer;
 
         /// <summary>
         /// 射击间隔。
@@ -48,39 +80,88 @@ namespace Frame.Entity
         /// 射击范围。
         /// </summary>
         public Value Range => range;
+        
+        /// <summary>
+        /// 弹夹容量。
+        /// </summary>
+        public Value ClipSize => clipSize;
+
+        /// <summary>
+        /// 换弹时间。
+        /// </summary>
+        public Value ReloadTime => reloadTime;
 
 
+        public float ReloadProgress => reloadTick / reloadTime.final;
+        
         public override void Reset()
         {
             base.Reset();
             interval = Value.Zero;
             range = Value.Zero;
+            clipSize = Value.Zero;
+            reloadTime = Value.Zero;
             orientation = Vector2.Zero;
-            coolTime = 0f;
+            coolTick = 0f;
             isCooling = false;
 
             interval.basic = defaultInterval;
             range.basic = defaultRange;
+            clipSize.basic = defaultClipSize;
+            reloadTime.basic = defaultReloadTime;
+            bulletCount = clipSize.intFinal;
         }
 
 
         protected override void SubscribeEvents()
         {
-            base.SubscribeEvents();
             ModuleEvent.Subscribe<EventMouseInput>(OnMouseInput, Entity);
+            ModuleEvent.Subscribe<EventTimeout>(OnTimeout, Entity);
+        }
+
+        protected virtual void OnTimeout(object sender, EventTimeout e)
+        {
+            if ("shooter_cooling".Equals(e.timerName))
+            {
+                isCooling = false;
+            }
+            
+            if ("shooter_reload".Equals(e.timerName))
+            {
+                isReloading = false;
+                bulletCount = clipSize.intFinal;
+            }
+
         }
 
         protected virtual void OnMouseInput(object sender, EventMouseInput e)
         {
-            if (e.fire[1] && !isCooling)
+            if (!e.fire[1])
+            {
+                return;
+            }
+            
+            if (bulletCount > 0)
             {
                 Shoot();
-                isCooling = true;
+            }
+            else
+            {
+                Reload();
             }
         }
+        
 
         protected virtual void Shoot()
         {
+            if (isCooling)
+            {
+                return;
+            }
+
+            isCooling = true;
+            ModuleTimer.StartNew(Entity, interval.final, "shooter_cooling");
+            
             // 根据鼠标位置获取方向。
             var globalMousePosition = Entity.GetGlobalMousePosition();
             var direction = globalMousePosition - Entity.Position;
@@ -92,33 +173,25 @@ namespace Frame.Entity
             // 生成子弹实体，并控制它的方向和速度。
             var bullet = ModuleEntity.Spawn(EntityType.Bullet, Entity.Position);
             bullet.SendEvent(new EventArrowInput(orientation));
-            bullet.SendEvent(new EventValueUpdate("range", range));
-            bullet.SendEvent(new EventValueUpdate("speed", new Value(100f))); // TODO 配置子弹速度。
-            bullet.SendEvent(new EventValueUpdate("raycastLayer", new Value(shootLayer))); // TODO 射击对象由武器决定。
+            bullet.SendEvent(new EventValueUpdate("movedRange", range));
+            bullet.SendEvent(new EventValueUpdate("speed", new Value(50f))); // TODO 配置子弹速度。
+            bullet.SendEvent(new EventValueUpdate("raycastLayer", new Value(shootLayer)));
+
+            --bulletCount;
         }
 
 
-        public override void _Process(float delta)
+        protected virtual void Reload()
         {
-            CooldownProcess(delta);
-        }
-
-        protected void CooldownProcess(float delta)
-        {
-            if (!isCooling)
+            if (isReloading)
             {
                 return;
             }
-
-            coolTime += delta;
-            
-            if (coolTime >= interval.final)
-            {
-                coolTime = 0f;
-                isCooling = false;
-            }
-            
+            isReloading = true;
+            ModuleTimer.StartNew(Entity, reloadTime.final, "shooter_reload");
         }
+
+
 
 
     }

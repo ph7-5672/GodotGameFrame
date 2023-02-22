@@ -10,10 +10,14 @@ namespace Frame.Entity
     {
         protected KinematicBody2D kinematicEntity => Entity as KinematicBody2D;
         
-        protected override void Translate(float delta)
+        protected override void Translate(Vector2 translation)
         {
-            var translation = velocity * speed.final * Constants.unitMeter;
             kinematicEntity.MoveAndSlide(translation);
+        }
+
+        protected override Vector2 GetTranslation(float delta)
+        {
+            return velocity * speed.final * Constants.unitMeter;
         }
     }
 }

@@ -28,7 +28,10 @@ defaultBounce = 30.0
 
 [node name="Shooter" type="Node" parent="."]
 script = ExtResource( 4 )
-defaultInterval = 0.5
+defaultInterval = 0.1
+defaultRange = 100.0
+defaultClipSize = 30.0
+defaultReloadTime = 2.0
 shootLayer = 4
 
 [node name="Camera2D" type="Camera2D" parent="."]

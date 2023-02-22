@@ -55,7 +55,7 @@ namespace Frame.Entity
         public override void _PhysicsProcess(float delta)
         {
             ApplyGravity(delta);
-            Translate(delta);
+            base._PhysicsProcess(delta);
             OnFloorCheck(delta);
         }
         
@@ -98,13 +98,18 @@ namespace Frame.Entity
             velocity.y += gravity * delta * Constants.unitMeter;
         }
 
-        protected override void Translate(float delta)
+        protected override void Translate(Vector2 translation)
+        {
+            kinematicEntity.MoveAndSlideWithSnap(translation, snap, Vector2.Up, true);
+        }
+
+        protected override Vector2 GetTranslation(float delta)
         {
             var translation = new Vector2(velocity.x * speed.final, velocity.y);
             translation *= Constants.unitMeter;
-            kinematicEntity.MoveAndSlideWithSnap(translation, snap, Vector2.Up, true);
+            return translation;
         }
-        
+
         protected void OnFloorCheck(float delta)
         {
             isOnFloor = kinematicEntity.IsOnFloor();

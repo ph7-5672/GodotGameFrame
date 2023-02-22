@@ -89,5 +89,30 @@ namespace Frame.Common
         }
     }
 
+    /// <summary>
+    /// 移动距离到达上限。
+    /// </summary>
+    public readonly struct EventMovedToRange : IEventArgs
+    {
+        public readonly float range;
+
+        public EventMovedToRange(float range)
+        {
+            this.range = range;
+        }
+    }
+
+    /// <summary>
+    /// 计时。
+    /// </summary>
+    public readonly struct EventTimeout : IEventArgs
+    {
+        public readonly string timerName;
+
+        public EventTimeout(string timerName)
+        {
+            this.timerName = timerName;
+        }
+    }
 
 }

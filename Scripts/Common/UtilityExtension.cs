@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Frame.Module;
 using Godot;
+using Godot.Collections;
 
 namespace Frame.Common
 {
@@ -40,6 +41,11 @@ namespace Frame.Common
             return node.Name.StartsWith("Entity-");
         }
 
+        
+        public static bool IsKilled(this Node2D entity)
+        {
+            return !entity.IsInsideTree();
+        }
 
         public static EntityType GetEntityType(this Node2D entity)
         {
@@ -64,6 +70,11 @@ namespace Frame.Common
         /// <returns></returns>
         public static Godot.Collections.Dictionary Raycast2D(this Node2D entity, Vector2 from, Vector2 to, Godot.Collections.Array exclude, uint collisionLayer = 2147483647)
         {
+            if (entity.IsKilled())
+            {
+                return null;
+            }
+
             var spaceState = entity.GetWorld2d().DirectSpaceState;
             return spaceState.IntersectRay(from, to, exclude, collisionLayer);
 
