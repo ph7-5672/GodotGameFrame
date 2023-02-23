@@ -111,7 +111,7 @@ namespace Frame.Entity
             if (raycastWidth > 0)
             {
                 var from = Entity.Position;
-                var to = from + translation;
+                var to = from - translation;
                 var exclude = new Array(Entity);
                 var result = Entity.Raycast2D(from, to, exclude, raycastLayer);
 
@@ -165,9 +165,9 @@ namespace Frame.Entity
 
             moved = expectedMoved;
 
-            Raycast(translation);
             Translate(translation);
             Entity.SendEvent(new EventTranslate(translation, moved));
+            Raycast(translation);
         }
 
         public override void _Process(float delta)

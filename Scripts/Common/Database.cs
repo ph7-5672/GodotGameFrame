@@ -31,7 +31,7 @@ namespace Frame.Common
             clipSize.basic = float.Parse(line[4]);
             reloadTime.basic = float.Parse(line[5]);
             bulletSpeed.basic = float.Parse(line[6]);
-            caliber = float.Parse(line[7]) * Constants.unitMeter / 1000f;
+            caliber = float.Parse(line[7]) * Constants.unitMeter / 100f;
             damage.basic = float.Parse(line[8]);
         }
 

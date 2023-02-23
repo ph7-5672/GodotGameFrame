@@ -49,7 +49,6 @@ namespace Frame.Entity
         
         public override void Reset()
         {
-            base.Reset();
             guns.Clear();
             activeGun = null;
             orientation = Vector2.Zero;
@@ -59,6 +58,7 @@ namespace Frame.Entity
             // 测试
             guns.AddRange(ModuleDatabase.Load<GunsData>(DatabaseType.Guns));
             activeGun = guns[0];
+            bulletCount = activeGun.clipSize.intFinal;
         }
 
 
@@ -130,6 +130,7 @@ namespace Frame.Entity
             bullet.SendEvent(new EventValueUpdate("movedRange", activeGun.range));
             bullet.SendEvent(new EventValueUpdate("speed", activeGun.bulletSpeed));
             bullet.SendEvent(new EventValueUpdate("raycastLayer", new Value(shootLayer)));
+            bullet.SendEvent(new EventValueUpdate("bulletWidth", new Value(activeGun.caliber)));
 
             --bulletCount;
         }
