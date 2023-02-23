@@ -99,6 +99,11 @@ namespace Frame.Entity
             {
                 raycastWidth = e.value.final;
             }
+
+            if ("bulletWidth".Equals(e.name))
+            {
+                raycastWidth = e.value.final;
+            }
         }
         
         protected virtual void Translate(Vector2 translation)
@@ -117,7 +122,8 @@ namespace Frame.Entity
 
                 if (result == null || result.Count == 0)
                 {
-                    var topTranslation = translation.Rotated(90f).Normalized() * raycastWidth / 2f;
+                    var angle = Mathf.Deg2Rad(90f);
+                    var topTranslation = translation.Rotated(angle).Normalized() * raycastWidth / 2f;
                     var topFrom = from + topTranslation;
                     var topTo = to + topTranslation;
                     result = Entity.Raycast2D(topFrom, topTo, exclude, raycastLayer);
@@ -125,7 +131,8 @@ namespace Frame.Entity
 
                 if (result == null || result.Count == 0)
                 {
-                    var bottomTranslation = translation.Rotated(-90f).Normalized() * raycastWidth / 2f;
+                    var angle = Mathf.Deg2Rad(-90f);
+                    var bottomTranslation = translation.Rotated(angle).Normalized() * raycastWidth / 2f;
                     var bottomFrom = from + bottomTranslation;
                     var bottomTo = to + bottomTranslation;
                     result = Entity.Raycast2D(bottomFrom, bottomTo, exclude, raycastLayer);

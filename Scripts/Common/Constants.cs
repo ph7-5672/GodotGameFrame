@@ -9,8 +9,7 @@ namespace Frame.Common
         /// <summary>
         /// 单位米。
         /// </summary>
-        public const float unitMeter = 16f;
-        public const float gravity = 9.8f;
+        public const float unitMeter = 20f;
 
     }
 
@@ -26,6 +25,7 @@ namespace Frame.Common
     public enum FormType
     {
         Logo,
+        PlayerInfo
     }
 
     public enum SceneType

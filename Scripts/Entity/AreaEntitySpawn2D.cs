@@ -73,11 +73,9 @@ namespace Frame.Entity
             Tick(delta);
         }
 
-        static readonly Random random = new Random();
-        
         void Spawn()
         {
-            var count = random.Next(singleMinCount, singleMaxCount);
+            var count = UtilityRandom.Next(singleMinCount, singleMaxCount);
             // 限制生成次数，不超过设定的最大值。
             count = Mathf.Min(count, globalMaxCount - spawnedCount);
 
@@ -112,8 +110,8 @@ namespace Frame.Entity
         {
             var min = RectPosition;
             var max = min + RectSize;
-            var x = random.Next((int)min.x, (int)max.x);
-            var y = random.Next((int)min.y, (int)max.y);
+            var x = UtilityRandom.Next((int)min.x, (int)max.x);
+            var y = UtilityRandom.Next((int)min.y, (int)max.y);
             return new Vector2(x, y);
         }
 

@@ -57,7 +57,7 @@ namespace Frame.Entity
             
             // 测试
             guns.AddRange(ModuleDatabase.Load<GunsData>(DatabaseType.Guns));
-            activeGun = guns[0];
+            activeGun = guns[2];
             bulletCount = activeGun.clipSize.intFinal;
         }
 
@@ -122,6 +122,12 @@ namespace Frame.Entity
             if (direction != Vector2.Zero)
             {
                 orientation = direction.Normalized();
+                // 随机扩散。
+                var spread = activeGun.spread.final;
+                var angle = UtilityRandom.NextFloat(-spread, spread, 3);
+                
+                var rad = Mathf.Deg2Rad(angle);
+                orientation = orientation.Rotated(rad);
             }
             
             // 生成子弹实体，并控制它的方向和速度。
@@ -133,6 +139,7 @@ namespace Frame.Entity
             bullet.SendEvent(new EventValueUpdate("bulletWidth", new Value(activeGun.caliber)));
 
             --bulletCount;
+            Entity.SendEvent(new EventValueUpdate(nameof(bulletCount), new Value(bulletCount)));
         }
 
 

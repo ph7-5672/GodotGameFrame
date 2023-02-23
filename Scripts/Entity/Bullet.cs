@@ -61,7 +61,7 @@ namespace Frame.Entity
         {
             var collider = e.collider;
             Die();
-            ModuleEntity.Kill(collider);
+           // ModuleEntity.Kill(collider);
         }
         
         protected virtual void OnMovedToRange(object sender, EventMovedToRange e)

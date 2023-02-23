@@ -5,6 +5,7 @@ namespace Frame.Entity
 {
     public class Player : EntityComponentBase<Node2D>
     {
+
         public override void _Process(float delta)
         {
             ArrowInput();

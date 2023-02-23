@@ -23,6 +23,8 @@ namespace Frame.Common
 
         public Value damage;
 
+        public Value spread;
+
         public void OnParse(string[] line)
         {
             name = line[1];
@@ -33,6 +35,7 @@ namespace Frame.Common
             bulletSpeed.basic = float.Parse(line[6]);
             caliber = float.Parse(line[7]) * Constants.unitMeter / 100f;
             damage.basic = float.Parse(line[8]);
+            spread.basic = float.Parse(line[9]);
         }
 
     }

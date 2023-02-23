@@ -1,5 +1,7 @@
 using Frame.Common;
+using Frame.Form;
 using Frame.Module;
+using Godot;
 
 namespace Frame.Stage
 {
@@ -9,7 +11,9 @@ namespace Frame.Stage
         public override void OnEnter()
         {
             ModuleScene.LoadScene(SceneType.Test);
-            ModuleEntity.Spawn(EntityType.Player);
+            var player = ModuleEntity.Spawn(EntityType.Player);
+            var form = (FormPlayerInfo) ModuleForm.Open(FormType.PlayerInfo);
+            form.Player = player;
         }
 
     }

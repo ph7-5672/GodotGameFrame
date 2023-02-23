@@ -11,10 +11,10 @@ namespace Frame.Module
         /// <param name="formType"></param>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
-        public static Node Open<T>(FormType formType) where T : CanvasItem
+        public static CanvasItem Open(FormType formType)
         {
             var name = formType.ToString();
-            var instance = ModuleScene.LoadInstance<T>($"Forms/{name}", GameFrame.FormRoot);
+            var instance = ModuleScene.LoadInstance<CanvasItem>($"Forms/{name}", GameFrame.FormRoot);
             return instance;
         }
 
