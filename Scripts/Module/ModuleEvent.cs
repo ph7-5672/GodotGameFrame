@@ -28,13 +28,14 @@ namespace Frame.Module
         {
             EventManger<T>.Send(eventArgs, sender);
         }
+
     }
 
 
     internal static class EventManger<T> where T : struct, IEventArgs
     {
         public static event EventHandler<T> e = delegate(object sender, T args) {};
-
+        
         public static void Subscribe(EventHandler<T> handler, object sender = null)
         {
             e += (o, args) =>

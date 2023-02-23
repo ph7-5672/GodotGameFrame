@@ -25,5 +25,7 @@ namespace Frame.Common
         /// 表格里的编号。
         /// </summary>
         int Id { get; set; }
+
+        void OnParse(string[] line);
     }
 }

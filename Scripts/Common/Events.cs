@@ -55,6 +55,7 @@ namespace Frame.Common
             this.value = value;
         }
     }
+    
 
     /// <summary>
     /// 移动射线检测。
@@ -112,6 +113,22 @@ namespace Frame.Common
         public EventTimeout(string timerName)
         {
             this.timerName = timerName;
+        }
+    }
+
+    /// <summary>
+    /// 同步位置事件。
+    /// </summary>
+    public readonly struct EventTranslate : IEventArgs
+    {
+        public readonly Vector2 translation;
+
+        public readonly float moved;
+
+        public EventTranslate(Vector2 translation, float moved)
+        {
+            this.translation = translation;
+            this.moved = moved;
         }
     }
 

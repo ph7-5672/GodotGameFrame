@@ -80,5 +80,11 @@ namespace Frame.Common
             return spaceState.IntersectRay(from, to, exclude, collisionLayer);
 
         }
+        
+        
+        
+        
+        
+        
     }
 }

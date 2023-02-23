@@ -33,14 +33,10 @@ namespace Frame.Common
         Test
     }
 
-    /// <summary>
-    /// 行动类型。
-    /// </summary>
-    public enum ActionType
+    public enum DatabaseType
     {
-        Dodge,
-        Slide,
-        Defense
+        Guns
     }
+
 
 }

@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Frame.Common;
 using Frame.Module;
 using Godot;
@@ -9,32 +10,22 @@ namespace Frame.Entity
     /// </summary>
     public class Shooter : EntityComponentBase<KinematicBody2D>
     {
-        [Export]
-        public float defaultInterval;
+        /// <summary>
+        /// 持有枪支。
+        /// </summary>
+        protected readonly List<GunsData> guns = new List<GunsData>();
+
+        /// <summary>
+        /// 当前使用的枪支。
+        /// </summary>
+        protected GunsData activeGun;
         
-        [Export]
-        public float defaultRange;
-
-        [Export]
-        public float defaultClipSize;
-
-        [Export]
-        public float defaultReloadTime;
-
         /// <summary>
         /// 子弹生效对象层级。
         /// </summary>
         [Export(PropertyHint.Layers2dPhysics)]
         public uint shootLayer;
         
-        protected Value interval;
-        
-        protected Value range;
-
-        protected Value clipSize;
-
-        protected Value reloadTime;
-
         /// <summary>
         /// 朝向。
         /// </summary>
@@ -55,43 +46,19 @@ namespace Frame.Entity
         /// </summary>
         protected bool isReloading;
 
-        /// <summary>
-        /// 射击间隔。
-        /// </summary>
-        public Value Interval => interval;
-        
-        /// <summary>
-        /// 射击范围。
-        /// </summary>
-        public Value Range => range;
-        
-        /// <summary>
-        /// 弹夹容量。
-        /// </summary>
-        public Value ClipSize => clipSize;
-
-        /// <summary>
-        /// 换弹时间。
-        /// </summary>
-        public Value ReloadTime => reloadTime;
-
-        
         
         public override void Reset()
         {
             base.Reset();
-            interval = Value.Zero;
-            range = Value.Zero;
-            clipSize = Value.Zero;
-            reloadTime = Value.Zero;
+            guns.Clear();
+            activeGun = null;
             orientation = Vector2.Zero;
             isCooling = false;
-
-            interval.basic = defaultInterval;
-            range.basic = defaultRange;
-            clipSize.basic = defaultClipSize;
-            reloadTime.basic = defaultReloadTime;
-            bulletCount = clipSize.intFinal;
+            bulletCount = 0;
+            
+            // 测试
+            guns.AddRange(ModuleDatabase.Load<GunsData>(DatabaseType.Guns));
+            activeGun = guns[0];
         }
 
 
@@ -103,26 +70,31 @@ namespace Frame.Entity
 
         protected virtual void OnTimeout(object sender, EventTimeout e)
         {
-            if ("shooter_cooling".Equals(e.timerName))
+            if (activeGun == null)
+            {
+                return;
+            }
+
+            if ($"{activeGun.name}_cooling".Equals(e.timerName))
             {
                 isCooling = false;
             }
             
-            if ("shooter_reload".Equals(e.timerName))
+            if ($"{activeGun.name}_reload".Equals(e.timerName))
             {
                 isReloading = false;
-                bulletCount = clipSize.intFinal;
+                bulletCount = activeGun.clipSize.intFinal;
             }
 
         }
 
         protected virtual void OnMouseInput(object sender, EventMouseInput e)
         {
-            if (!e.fire[1])
+            if (!e.fire[1] || activeGun == null)
             {
                 return;
             }
-            
+
             if (bulletCount > 0)
             {
                 Shoot();
@@ -142,7 +114,7 @@ namespace Frame.Entity
             }
 
             isCooling = true;
-            ModuleTimer.StartNew(Entity, interval.final, "shooter_cooling");
+            ModuleTimer.StartNew(Entity, activeGun.interval.final, $"{activeGun.name}_cooling");
             
             // 根据鼠标位置获取方向。
             var globalMousePosition = Entity.GetGlobalMousePosition();
@@ -155,8 +127,8 @@ namespace Frame.Entity
             // 生成子弹实体，并控制它的方向和速度。
             var bullet = ModuleEntity.Spawn(EntityType.Bullet, Entity.GlobalPosition);
             bullet.SendEvent(new EventArrowInput(orientation));
-            bullet.SendEvent(new EventValueUpdate("movedRange", range));
-            bullet.SendEvent(new EventValueUpdate("speed", new Value(40f))); // TODO 配置子弹速度。
+            bullet.SendEvent(new EventValueUpdate("movedRange", activeGun.range));
+            bullet.SendEvent(new EventValueUpdate("speed", activeGun.bulletSpeed));
             bullet.SendEvent(new EventValueUpdate("raycastLayer", new Value(shootLayer)));
 
             --bulletCount;
@@ -170,7 +142,7 @@ namespace Frame.Entity
                 return;
             }
             isReloading = true;
-            ModuleTimer.StartNew(Entity, reloadTime.final, "shooter_reload");
+            ModuleTimer.StartNew(Entity, activeGun.reloadTime.final, $"{activeGun.name}_reload");
         }
 
 

@@ -9,13 +9,15 @@ namespace Frame.Entity
     /// </summary>
     public class Bullet : EntityComponentBase<Line2D>
     {
-
-        protected Vector2 globalPosHistory;
+        /// <summary>
+        /// 拖尾长度。
+        /// </summary>
+        [Export]
+        public float tailLength = 20f;
         
         public override void Reset()
         {
             Entity.ClearPoints();
-            globalPosHistory = Entity.GlobalPosition;
         }
 
         protected override void SubscribeEvents()
@@ -23,6 +25,19 @@ namespace Frame.Entity
             base.SubscribeEvents();
             ModuleEvent.Subscribe<EventMoverRaycast>(OnMoverRaycast, Entity);
             ModuleEvent.Subscribe<EventMovedToRange>(OnMovedToRange, Entity);
+            ModuleEvent.Subscribe<EventTranslate>(OnTranslate, Entity);
+        }
+
+        protected virtual void OnTranslate(object sender, EventTranslate e)
+        {
+            var translation = e.translation;
+            var pointCount = Entity.GetPointCount();
+
+            var pointPos = -translation * pointCount;
+            if (pointPos.Length() < tailLength)
+            {
+                Entity.AddPoint(pointPos);
+            }
         }
 
         protected virtual void OnMoverRaycast(object sender, EventMoverRaycast e)
@@ -39,25 +54,5 @@ namespace Frame.Entity
         }
 
 
-        public override void _Process(float delta)
-        {
-            var pointCount = Entity.GetPointCount();
-            for (var i = 0; i < pointCount; i++)
-            {
-                var position = Entity.GetPointPosition(i);
-                Entity.SetPointPosition(i, position + globalPosHistory - Entity.GlobalPosition);
-            }
-            
-            Entity.AddPoint(Vector2.Zero);
-            if (pointCount > 200)
-            {
-                Entity.RemovePoint(0);
-            }
-
-            globalPosHistory = Entity.GlobalPosition;
-            
-            // TODO 限制两个点间最短距离。
-
-        }
     }
 }

@@ -14,12 +14,11 @@ namespace Frame.Module
         /// <summary>
         /// 加载数据表。
         /// </summary>
-        /// <param name="name"></param>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
-        public static T[] Load<T>() where T : IData, new()
+        public static T[] Load<T>(DatabaseType databaseType) where T : IData, new()
         {
-            var name = typeof(T).Name;
+            var name = databaseType.ToString();
             if (!Instance.database.TryGetValue(name, out var list))
             {
                 list = LoadFromFile<T>(name);
@@ -56,17 +55,12 @@ namespace Frame.Module
                         Id = id
                     };
                     
-                    for (var i = 1; i < line.Length; i++)
-                    {
-                        var title = titles[i];
-                        var value = line[i];
-                        data.SetValue(title, value);
-                    }
-                    
+                    data.OnParse(line);
                     result.Add(data);
                 }
             }
-
+            file.Close();
+            file.Dispose();
             return result;
         }
 
