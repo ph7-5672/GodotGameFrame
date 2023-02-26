@@ -1,6 +1,6 @@
 namespace Frame.Common
 {
-    public struct Value
+    /*public struct Value
     {
         public float basic;
         public float addition;
@@ -56,5 +56,19 @@ namespace Frame.Common
 
         public static Value Zero => new Value();
 
+    }*/
+
+
+    public readonly struct KeyValue<T,V>
+    {
+        public readonly T key;
+        public readonly V value;
+
+        public KeyValue(T key, V value)
+        {
+            this.key = key;
+            this.value = value;
+        }
     }
+
 }

@@ -15,11 +15,20 @@ namespace Frame.Common
 
     public enum EntityType
     {
-        Player,
+        #region 主角
+        Police,
+        Doctor,
+        Soldier,
+        #endregion
+
+        #region 敌人
         Zombie,
-        Bullet
-        
+
+        #endregion
+        Gun,
+        Bullet,
     }
+
 
 
     public enum FormType
@@ -35,8 +44,23 @@ namespace Frame.Common
 
     public enum DatabaseType
     {
-        Guns
+        Guns,
+        Mover,
+        Shooter,
     }
 
+
+    public enum EventType
+    {
+        /// <summary>
+        /// 计时器计时事件。
+        /// </summary>
+        Timeout,
+        
+        /// <summary>
+        /// 实体生成事件。
+        /// </summary>
+        EntitySpawn,
+    }
 
 }

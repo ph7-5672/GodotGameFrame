@@ -9,17 +9,8 @@ namespace Frame.Entity
     /// </summary>
     public class MoverPlatform2D : Mover2D
     {
-        /// <summary>
-        /// 默认弹跳力。
-        /// </summary>
-        [Export]
-        public float defaultBounce;
-
-        /// <summary>
-        /// 重力。
-        /// </summary>
-        [Export]
-        public float gravity = 9.8f;
+        
+        public const float gravity = 9.8f;
         
         /// <summary>
         /// 是否接触地板。
@@ -30,14 +21,8 @@ namespace Frame.Entity
         /// 吸附。
         /// </summary>
         protected Vector2 snap;
-
-
-        protected Value bounce;
-
-        /// <summary>
-        /// 弹跳力。
-        /// </summary>
-        public Value Bounce => bounce;
+        
+        protected float bounce => Entity.GetValue("bounce");
 
 
         protected KinematicBody2D kinematicEntity => Entity as KinematicBody2D;
@@ -45,9 +30,7 @@ namespace Frame.Entity
         public override void Reset()
         {
             base.Reset();
-            bounce = Value.Zero;
-            bounce.basic = defaultBounce;
-            
+            processMode = ClippedCamera.ProcessModeEnum.Physics;
             snap = Vector2.Zero;
             isOnFloor = false;
         }
@@ -55,25 +38,15 @@ namespace Frame.Entity
         public override void _PhysicsProcess(float delta)
         {
             ApplyGravity(delta);
-            base._PhysicsProcess(delta);
             OnFloorCheck(delta);
+            base._PhysicsProcess(delta);
         }
         
-        
-        protected override void OnValueUpdate(object sender, EventValueUpdate e)
-        {
-            base.OnValueUpdate(sender, e);
-            if (nameof(bounce).Equals(e.name))
-            {
-                bounce = e.value;
-            }
-        }
-
-        protected override void OnArrowInput(object sender, EventArrowInput e)
+        protected override void Move(Object entity, BehaviorMove behavior)
         {
             // x轴移动。
-            velocity.x = e.arrow.x;
-            var arrowY = e.arrow.y;
+            velocity.x = behavior.velocity.x;
+            var arrowY = behavior.velocity.y;
             
             if (!isOnFloor || arrowY == 0)
             {
@@ -83,7 +56,7 @@ namespace Frame.Entity
             // y轴跳跃或下蹲。
             if (arrowY < 0)
             {
-                velocity.y = -bounce.final;
+                velocity.y = -bounce * Constants.unitMeter;
                 snap = Vector2.Zero;
             }
             else
@@ -105,12 +78,12 @@ namespace Frame.Entity
 
         protected override Vector2 GetTranslation(float delta)
         {
-            var translation = new Vector2(velocity.x * speed.final, velocity.y);
+            var translation = new Vector2(velocity.x * speed, velocity.y);
             translation *= Constants.unitMeter;
             return translation;
         }
 
-        protected void OnFloorCheck(float delta)
+        protected virtual void OnFloorCheck(float delta)
         {
             isOnFloor = kinematicEntity.IsOnFloor();
             if (isOnFloor)

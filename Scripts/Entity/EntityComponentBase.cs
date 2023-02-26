@@ -11,13 +11,13 @@ namespace Frame.Entity
         {
             Entity = GetParent<T>();
             Reset();
-            SubscribeEvents();
+            Init();
         }
 
         /// <summary>
         /// 订阅所有需要的事件。
         /// </summary>
-        protected virtual void SubscribeEvents()
+        protected virtual void Init()
         {
             
         }

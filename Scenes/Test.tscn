@@ -742,6 +742,6 @@ margin_left = 176.0
 margin_top = 547.0
 margin_right = 284.0
 margin_bottom = 622.0
-entityType = 1
+entityType = 3
 globalMaxCount = 100
 globalMaxTimes = 100

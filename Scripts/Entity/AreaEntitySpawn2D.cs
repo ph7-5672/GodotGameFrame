@@ -1,4 +1,3 @@
-using System;
 using Frame.Common;
 using Frame.Module;
 using Godot;
@@ -67,13 +66,13 @@ namespace Frame.Entity
         {
             if (canSpawn)
             {
-                Spawn();
+                Spawn2D();
             }
             
             Tick(delta);
         }
 
-        void Spawn()
+        void Spawn2D()
         {
             var count = UtilityRandom.Next(singleMinCount, singleMaxCount);
             // 限制生成次数，不超过设定的最大值。
@@ -88,7 +87,7 @@ namespace Frame.Entity
             {
                 // 取随机位置。
                 var randomPosition = GetRandomPosition();
-                ModuleEntity.Spawn(entityType, randomPosition);
+                ModuleEntity.Spawn2D(entityType, randomPosition);
             }
             spawnedCount += count;
             ++spawnedTimes;

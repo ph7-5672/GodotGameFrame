@@ -20,19 +20,16 @@ namespace Frame.Entity
                 y = Input.GetActionStrength("ui_down") - Input.GetActionStrength("ui_up")
             };
 
-            Entity.SendEvent(new EventArrowInput(arrow));
+            Entity.Behave(new BehaviorMove(arrow));
         }
 
 
         private void MouseInput()
         {
-            var fire = new bool[5];
-            for (var i = 0; i < fire.Length; i++)
+            if (Input.IsActionPressed("fire"))
             {
-                fire[i] = Input.IsMouseButtonPressed(i);
+                Entity.Behave(new BehaviorFire());
             }
-            
-            Entity.SendEvent(new EventMouseInput(fire));
         }
 
         

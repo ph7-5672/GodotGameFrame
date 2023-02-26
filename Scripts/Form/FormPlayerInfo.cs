@@ -10,7 +10,7 @@ namespace Frame.Form
 
         protected int bulletCount;
 
-        protected int clipSize;
+        protected int magazine;
 
 
         public Node2D Player
@@ -19,7 +19,7 @@ namespace Frame.Form
             set
             {
                 player = value;
-                ModuleEvent.Subscribe<EventValueUpdate>((sender, e) =>
+                /*ModuleEvent.Subscribe<EventValueUpdate>((sender, e) =>
                 {
                     if (nameof(bulletCount).Equals(e.name))
                     {
@@ -27,13 +27,13 @@ namespace Frame.Form
                         Refresh();
                     }
                     
-                    if (nameof(clipSize).Equals(e.name))
+                    if (nameof(magazine).Equals(e.name))
                     {
-                        clipSize = e.value.intFinal;
+                        magazine = e.value.intFinal;
                         Refresh();
                     }
                     
-                }, player);
+                }, player);*/
                 
             }
         }
@@ -52,7 +52,7 @@ namespace Frame.Form
 
         protected virtual void Refresh()
         {
-            bulletLabel.Text = $"Bullet:{bulletCount}/{clipSize}";
+            bulletLabel.Text = $"Bullet:{bulletCount}/{magazine}";
         }
 
 

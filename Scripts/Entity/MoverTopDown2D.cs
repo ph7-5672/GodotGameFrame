@@ -17,7 +17,7 @@ namespace Frame.Entity
 
         protected override Vector2 GetTranslation(float delta)
         {
-            return velocity * speed.final * Constants.unitMeter;
+            return velocity * speed * Constants.unitMeter;
         }
     }
 }

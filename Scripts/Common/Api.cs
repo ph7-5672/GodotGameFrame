@@ -1,3 +1,5 @@
+using Godot;
+
 namespace Frame.Common
 {
     /// <summary>
@@ -6,10 +8,6 @@ namespace Frame.Common
     public interface IEntityComponent
     {
         void Reset();
-    }
-
-    public interface IEventArgs
-    {
     }
 
     public interface IStage
@@ -28,4 +26,14 @@ namespace Frame.Common
 
         void OnParse(string[] line);
     }
+
+    public interface IEntityData : IData
+    {
+        string EntityType { get; set; }
+    }
+
+    public delegate bool Condition<in T>(Object entity, T behavior) where T : struct;
+    
+    public delegate void Executor<in T>(Object entity, T behavior) where T : struct;
+    
 }

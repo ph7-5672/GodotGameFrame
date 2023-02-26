@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
+using System.Security.Permissions;
 using Frame.Common;
 using Godot;
 
@@ -9,60 +9,70 @@ namespace Frame.Module
     public class ModuleDatabase : Singleton<ModuleDatabase>
     {
 
-        private readonly Dictionary<string, List<IData>> database = new Dictionary<string, List<IData>>();
+        //private readonly Dictionary<DatabaseType, Dictionary<int, IData>> database = new Dictionary<DatabaseType, Dictionary<int, IData>>();
 
+        private readonly Dictionary<DatabaseType, List<Dictionary<string, string>>> database =
+            new Dictionary<DatabaseType, List<Dictionary<string, string>>>();
+
+        public static Dictionary<DatabaseType, List<Dictionary<string, string>>> Database => Instance.database;
+        
+        
         /// <summary>
         /// 加载数据表。
         /// </summary>
-        /// <typeparam name="T"></typeparam>
         /// <returns></returns>
-        public static T[] Load<T>(DatabaseType databaseType) where T : IData, new()
+        public static void Load(DatabaseType databaseType)
         {
-            var name = databaseType.ToString();
-            if (!Instance.database.TryGetValue(name, out var list))
+            if (!Instance.database.TryGetValue(databaseType, out var list))
             {
-                list = LoadFromFile<T>(name);
-                Instance.database.Add(name, list);
+                list = LoadAsDictionary(databaseType);
+                Instance.database.Add(databaseType, list);
             }
-            return list.Cast<T>().ToArray();
         }
 
-
-        private static List<IData> LoadFromFile<T>(string name) where T : IData, new()
+        public static List<Dictionary<string, string>> LoadAsDictionary(DatabaseType databaseType)
         {
             var file = new File();
-            file.Open($"{Constants.resourceRoot}Database/{name}{Constants.databaseSuffix}", File.ModeFlags.Read);
+            file.Open($"{Constants.resourceRoot}Database/{databaseType}{Constants.databaseSuffix}", File.ModeFlags.Read);
 
             string[] titles = null;
-            var result = new List<IData>();
-            
+            var result = new List<Dictionary<string, string>>();
             while (!file.EofReached())
             {
                 var line = file.GetCsvLine();
+                //result.Add(line);
                 if (line[0].Equals("*"))
                 {
                     titles = line;
                 }
                 else if (int.TryParse(line[0], out var id))
                 {
-                    if (titles == null)
+                    var dictionary = new Dictionary<string, string>();
+                    for (var i = 1; i < line.Length; ++i)
                     {
-                        throw new Exception("表格格式错误：没有标题行。");
+                        dictionary.Add(titles[i], line[i]);
                     }
-
-                    var data = new T
-                    {
-                        Id = id
-                    };
-                    
-                    data.OnParse(line);
-                    result.Add(data);
+                    result.Add(dictionary);
                 }
             }
+
             file.Close();
             file.Dispose();
+
             return result;
         }
+
+
+        public static Dictionary<string, string> GetData(DatabaseType databaseType, int index)
+        {
+            if (Instance.database.TryGetValue(databaseType, out var db))
+            {
+                return db[index];
+            }
+
+            return null;
+        }
+
 
     }
 }

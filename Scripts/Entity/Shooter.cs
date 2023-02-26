@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Diagnostics.Tracing;
 using Frame.Common;
 using Frame.Module;
 using Godot;
@@ -10,7 +11,7 @@ namespace Frame.Entity
     /// </summary>
     public class Shooter : EntityComponentBase<KinematicBody2D>
     {
-        /// <summary>
+        /*/// <summary>
         /// 持有枪支。
         /// </summary>
         protected readonly List<GunsData> guns = new List<GunsData>();
@@ -18,14 +19,8 @@ namespace Frame.Entity
         /// <summary>
         /// 当前使用的枪支。
         /// </summary>
-        protected GunsData activeGun;
-        
-        /// <summary>
-        /// 子弹生效对象层级。
-        /// </summary>
-        [Export(PropertyHint.Layers2dPhysics)]
-        public uint shootLayer;
-        
+        protected GunsData activeGun;*/
+
         /// <summary>
         /// 朝向。
         /// </summary>
@@ -37,64 +32,128 @@ namespace Frame.Entity
         protected bool isCooling;
 
         /// <summary>
-        /// 剩余子弹数量。
-        /// </summary>
-        protected int bulletCount;
-        
-        /// <summary>
         /// 是否换弹中。
         /// </summary>
         protected bool isReloading;
 
+
+        protected int activeGunId;
+
+        protected string activeGunName;
+
+        /// <summary>
+        /// 子弹生效对象层级。
+        /// </summary>
+        protected uint shootLayer => (uint) Entity.GetValue("shootLayer");
+        /// <summary>
+        /// 弹匣容量。
+        /// </summary>
+        protected int magazine => Entity.GetIntValue("magazine");
+        /// <summary>
+        /// 剩余子弹数量。
+        /// </summary>
+        protected int bulletCount => Entity.GetIntValue("bulletCount");
+        /// <summary>
+        /// 扩散角度。
+        /// </summary>
+        protected float shootSpread => Entity.GetValue("shootSpread");
+        /// <summary>
+        /// 射击间隔。
+        /// </summary>
+        protected float shootInterval => Entity.GetValue("shootInterval");
+        /// <summary>
+        /// 射程。
+        /// </summary>
+        protected float shootRange => Entity.GetValue("shootRange");
+        /// <summary>
+        /// 子弹速度。
+        /// </summary>
+        protected float bulletSpeed => Entity.GetValue("bulletSpeed");
+        /// <summary>
+        /// 子弹口径。
+        /// </summary>
+        protected float bulletSpec => Entity.GetValue("bulletSpec");
+        /// <summary>
+        /// 换弹时间。
+        /// </summary>
+        protected float reloadTime => Entity.GetValue("reloadTime");
+        
+        
+        
         
         public override void Reset()
         {
-            guns.Clear();
-            activeGun = null;
             orientation = Vector2.Zero;
             isCooling = false;
-            bulletCount = 0;
-            
+            activeGunId = -1;
+
             // 测试
-            guns.AddRange(ModuleDatabase.Load<GunsData>(DatabaseType.Guns));
-            activeGun = guns[2];
-            bulletCount = activeGun.clipSize.intFinal;
+            ChangeGun(2);
+        }
+        
+        protected override void Init()
+        {
+            Entity.LoginBehaviorCondition<BehaviorFire>(CanFire);
+            Entity.LoginBehaviorExecutor<BehaviorFire>(Fire);
+        }
+
+        private void ChangeGun(int gunId)
+        {
+            activeGunId = gunId;
+            var activeGunInfo = ModuleDatabase.GetData(DatabaseType.Guns, gunId);
+            activeGunName = activeGunInfo["name"];
+            foreach (var pair in activeGunInfo)
+            {
+                if (float.TryParse(pair.Value, out var value))
+                {
+                    Entity.SetValue(pair.Key, value);
+                }
+            }
+            ReloadFinish();
+        }
+
+        private void ReloadFinish()
+        {
+            isReloading = false;
+            Entity.SetValue("bulletCount", magazine);
         }
 
 
-        protected override void SubscribeEvents()
+        private bool CanFire(Object entity, BehaviorFire behavior)
         {
-            ModuleEvent.Subscribe<EventMouseInput>(OnMouseInput, Entity);
-            ModuleEvent.Subscribe<EventTimeout>(OnTimeout, Entity);
+            return !isCooling && activeGunId >= 0;
         }
 
-        protected virtual void OnTimeout(object sender, EventTimeout e)
+        [Common.Event(EventType.Timeout)]
+        public static void OnTimeout(object owner, string timerName, bool isRepeat)
         {
-            if (activeGun == null)
+            if (owner is Shooter shooter)
+            {
+                shooter.OnTimeout(timerName);
+            }
+        }
+
+        protected virtual void OnTimeout(string timerName)
+        {
+            if (activeGunId < 0)
             {
                 return;
             }
 
-            if ($"{activeGun.name}_cooling".Equals(e.timerName))
+            if ($"{activeGunName}_cooling".Equals(timerName))
             {
                 isCooling = false;
             }
             
-            if ($"{activeGun.name}_reload".Equals(e.timerName))
+            if ($"{activeGunName}_reload".Equals(timerName))
             {
-                isReloading = false;
-                bulletCount = activeGun.clipSize.intFinal;
+                ReloadFinish();
             }
 
         }
 
-        protected virtual void OnMouseInput(object sender, EventMouseInput e)
+        protected virtual void Fire(Object entity, BehaviorFire behavior)
         {
-            if (!e.fire[1] || activeGun == null)
-            {
-                return;
-            }
-
             if (bulletCount > 0)
             {
                 Shoot();
@@ -103,18 +162,14 @@ namespace Frame.Entity
             {
                 Reload();
             }
+            
         }
         
 
         protected virtual void Shoot()
         {
-            if (isCooling)
-            {
-                return;
-            }
-
             isCooling = true;
-            ModuleTimer.StartNew(Entity, activeGun.interval.final, $"{activeGun.name}_cooling");
+            ModuleTimer.StartNew(this, shootInterval, $"{activeGunName}_cooling");
             
             // 根据鼠标位置获取方向。
             var globalMousePosition = Entity.GetGlobalMousePosition();
@@ -123,7 +178,7 @@ namespace Frame.Entity
             {
                 orientation = direction.Normalized();
                 // 随机扩散。
-                var spread = activeGun.spread.final;
+                var spread = shootSpread;
                 var angle = UtilityRandom.NextFloat(-spread, spread, 3);
                 
                 var rad = Mathf.Deg2Rad(angle);
@@ -131,15 +186,14 @@ namespace Frame.Entity
             }
             
             // 生成子弹实体，并控制它的方向和速度。
-            var bullet = ModuleEntity.Spawn(EntityType.Bullet, Entity.GlobalPosition);
-            bullet.SendEvent(new EventArrowInput(orientation));
-            bullet.SendEvent(new EventValueUpdate("movedRange", activeGun.range));
-            bullet.SendEvent(new EventValueUpdate("speed", activeGun.bulletSpeed));
-            bullet.SendEvent(new EventValueUpdate("raycastLayer", new Value(shootLayer)));
-            bullet.SendEvent(new EventValueUpdate("bulletWidth", new Value(activeGun.caliber)));
+            var bullet = ModuleEntity.Spawn2D(EntityType.Bullet, Entity.GlobalPosition);
+            bullet.SetValue("movedRange", shootRange);
+            bullet.SetValue("speed", bulletSpeed);
+            bullet.SetValue("raycastLayer", shootLayer);
+            bullet.SetValue("raycastWidth", bulletSpec);
 
-            --bulletCount;
-            Entity.SendEvent(new EventValueUpdate(nameof(bulletCount), new Value(bulletCount)));
+            bullet.Behave(new BehaviorMove(orientation));
+            Entity.SetValue("bulletCount", bulletCount - 1);
         }
 
 
@@ -150,7 +204,7 @@ namespace Frame.Entity
                 return;
             }
             isReloading = true;
-            ModuleTimer.StartNew(Entity, activeGun.reloadTime.final, $"{activeGun.name}_reload");
+            ModuleTimer.StartNew(this, reloadTime, $"{activeGunName}_reload");
         }
 
 
