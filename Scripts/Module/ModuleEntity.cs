@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using Frame.Common;
 using Godot;
+using Object = Godot.Object;
+using ValueType = Frame.Common.ValueType;
 
 namespace Frame.Module
 {
@@ -11,11 +13,22 @@ namespace Frame.Module
         /// <summary>
         /// 实体池。
         /// </summary>
-        private readonly Dictionary<EntityType, Queue<Node2D>> entityPool = new Dictionary<EntityType, Queue<Node2D>>();
+        private readonly Dictionary<EntityType, Queue<Node>> entityPool = new Dictionary<EntityType, Queue<Node>>();
 
-        public static Node2D Spawn2D(EntityType entityType, Vector2 position = new Vector2())
+        private readonly Dictionary<ulong, EntityType> entityTypes = new Dictionary<ulong, EntityType>();
+
+        public static void FillPool(EntityType entityType, int size)
         {
-            Node2D entity;
+            for (var i = 0; i < size; ++i)
+            {
+                var entity = Spawn(entityType);
+                Kill(entity);
+            }
+        }
+
+        public static Node Spawn(EntityType entityType)
+        {
+            Node entity;
             if (Instance.entityPool.TryGetValue(entityType, out var pool) && pool.Count > 0)
             {
                 entity = pool.Dequeue();
@@ -23,111 +36,119 @@ namespace Frame.Module
             }
             else
             {
-                entity = ModuleScene.LoadInstance<Node2D>($"Entities/{entityType}", GameFrame.EntityRoot);
+                entity = ModuleScene.LoadInstance<Node>($"Entities/{entityType}", GameFrame.EntityRoot);
+                Instance.entityTypes.Add(entity.GetInstanceId(), entityType);
             }
-
-            entity.Name = $"Entity-{entityType}-{Guid.NewGuid()}";
-            entity.Position = position;
-
-            SetValuesByDatabase(entityType, entity);
             return entity;
         }
 
 
-        private static void SetValuesByDatabase(EntityType entityType, Node2D entity)
-        {
-            foreach (var dictionary in from value in ModuleDatabase.Database.Values
-                from dictionary in value
-                where dictionary.TryGetValue("entityType", out var type) && type.Equals(entityType.ToString())
-                select dictionary)
-            {
-                foreach (var pair in dictionary)
-                {
-                    if (float.TryParse(pair.Value, out var f))
-                    {
-                        entity.SetValue(pair.Key, f);
-                    }
-                }
-            }
-        }
-
-
-        public static void Kill(Node2D entity)
+        public static void Kill(Node entity)
         {
             if (!entity.IsInsideTree())
             {
                 return;
             }
 
-            ResetValues(entity);
+            // 清除所有组件。
+            RemoveValues(entity);
             
-            foreach (var component in entity.GetComponents().Cast<IEntityComponent>())
-            {
-                component.Reset();
-            }
-            
-            var entityType = entity.GetEntityType();
+            var entityType = GetEntityType(entity);
             if (!Instance.entityPool.TryGetValue(entityType, out var pool))
             {
-                pool = new Queue<Node2D>();
+                pool = new Queue<Node>();
                 Instance.entityPool.Add(entityType, pool);
             }
 
             pool.Enqueue(entity);
+            
             // 作为游离节点不进行渲染。
-            //GameFrame.EntityRoot.CallDeferred("remove_child", entity);
             GameFrame.EntityRoot.RemoveChild(entity);
         }
 
+        public static EntityType GetEntityType(Node entity)
+        {
+            return Instance.entityTypes[entity.GetInstanceId()];
+        }
 
         # region 实体属性
 
-        private readonly Dictionary<ulong, Dictionary<string, float>> entityValues =
-            new Dictionary<ulong, Dictionary<string, float>>();
+        private readonly Dictionary<ulong, IEntityValue[]> entityValuePool = new Dictionary<ulong, IEntityValue[]>();
 
-        public static float GetValue(Node2D entity, string valueName)
+        public static bool TryGetValue<T>(Node entity, ValueType valueType, out T value) where T : struct, IEntityValue
         {
             var instanceId = entity.GetInstanceId();
-            if (!Instance.entityValues.TryGetValue(instanceId, out var values))
+            if (Instance.entityValuePool.TryGetValue(instanceId, out var values))
             {
-                return 0f;
-            }
-
-            return values.TryGetValue(valueName, out var value) ? value : 0f;
-        }
-
-
-        public static void SetValue(Node2D entity, string valueName, float value)
-        {
-            var instanceId = entity.GetInstanceId();
-            if (!Instance.entityValues.TryGetValue(instanceId, out var values))
-            {
-                values = new Dictionary<string, float>();
-                Instance.entityValues.Add(instanceId, values);
-            }
-
-            if (!values.TryGetValue(valueName, out _))
-            {
-                values.Add(valueName, value);
-            }
-
-            values[valueName] = value;
-        }
-
-
-        public static void ResetValues(Node2D entity)
-        {
-            var instanceId = entity.GetInstanceId();
-            if (Instance.entityValues.TryGetValue(instanceId, out var values))
-            {
-                var keys = values.Keys.ToArray();
-                foreach (var key in keys)
+                var result = values[(int) valueType];
+                if (result is T t)
                 {
-                    values[key] = 0f;
+                    value = t;
+                    return true;
+                }
+            }
+            value = default;
+            return false;
+        }
+        
+        public static void SetValue(Node entity, ValueType valueType, IEntityValue value)
+        {
+            var instanceId = entity.GetInstanceId();
+            if (!Instance.entityValuePool.TryGetValue(instanceId, out var values))
+            {
+                values = new IEntityValue[Constants.valueTypeArray.Length];
+                Instance.entityValuePool.Add(instanceId, values);
+            }
+
+            var index = (int) valueType;
+            var origin = values[index];
+            values[index] = value;
+            if (origin == null)
+            {
+                GameFrame.ForeachLogics(logic => logic.Ready(entity));
+            }
+
+            
+        }
+        
+        public static bool HasValue(Node entity, ValueType valueType)
+        {
+            var instanceId = entity.GetInstanceId();
+            if (Instance.entityValuePool.TryGetValue(instanceId, out var values))
+            {
+                var value = values[(int) valueType];
+                return value != null;
+            }
+
+            return false;
+        }
+
+
+        public static void RemoveValue(Node entity, ValueType valueType)
+        {
+            var instanceId = entity.GetInstanceId();
+            var index = (int) valueType;
+            if (Instance.entityValuePool.TryGetValue(instanceId, out var values))
+            {
+                values[index] = null;
+                GameFrame.ForeachLogics(logic => logic.Dispose(entity));
+            }
+        }
+
+        public static void RemoveValues(Node entity)
+        {
+            var instanceId = entity.GetInstanceId();
+            if (Instance.entityValuePool.TryGetValue(instanceId, out var values))
+            {
+                for (var i = 0; i < values.Length; i++)
+                {
+                    values[i] = null;
+                    GameFrame.ForeachLogics(logic => logic.Dispose(entity));
                 }
             }
         }
 
-        # endregion
+        #endregion
+
     }
 }

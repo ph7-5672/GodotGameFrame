@@ -2,12 +2,21 @@ using Godot;
 
 namespace Frame.Common
 {
-    /// <summary>
-    /// 实体组件。
-    /// </summary>
-    public interface IEntityComponent
+
+    public interface IEntityLogic
     {
-        void Reset();
+        void Ready(Object entity);
+        
+        void Dispose(Object entity);
+
+        void Process(Object entity, float delta);
+
+        void PhysicsProcess(Object entity, float delta);
+    }
+
+    public interface IEntityValue
+    {
+        
     }
 
     public interface IStage
@@ -17,7 +26,7 @@ namespace Frame.Common
         void OnExit();
     }
     
-    public interface IData
+    public interface ITableData
     {
         /// <summary>
         /// 表格里的编号。
@@ -27,13 +36,8 @@ namespace Frame.Common
         void OnParse(string[] line);
     }
 
-    public interface IEntityData : IData
-    {
-        string EntityType { get; set; }
-    }
-
-    public delegate bool Condition<in T>(Object entity, T behavior) where T : struct;
+    public delegate bool Condition<in T>(Node entity, T behavior) where T : struct;
     
-    public delegate void Executor<in T>(Object entity, T behavior) where T : struct;
+    public delegate void Executor<in T>(Node entity, T behavior) where T : struct;
     
 }

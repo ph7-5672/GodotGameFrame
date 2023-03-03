@@ -1,4 +1,3 @@
-using System;
 using System.Reflection;
 using Frame.Common;
 using Frame.Module;
@@ -13,22 +12,17 @@ namespace Frame.Stage
             // 订阅所有事件。
             SubscribeAssemblies();
             // 加载所有数据表。
-            LoadAllDatabase();
+            LoadAllDatatable();
+            // 填充实体对象池。
+            FillEntityPools();
             
-            
-            ModuleScene.LoadScene(SceneType.Test);
-            
-            ModuleEntity.Spawn2D(EntityType.Police);
-            /*var player = ModuleEntity.Spawn2DByDatabase(DatabaseType.Heroes, (int) HeroType.Police);
-            //var player = ModuleEntity.Spawn2D(EntityType.Police);
-            var form = (FormPlayerInfo) ModuleForm.Open(FormType.PlayerInfo);
-            form.Player = player;*/
+            ModuleStage.ChangeStage<StageTest>();
         }
 
 
         void SubscribeAssemblies()
         {
-            foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
+            foreach (var assembly in UtilityType.Assemblies)
             {
                 ScanAssemblies(assembly);
             }
@@ -53,12 +47,19 @@ namespace Frame.Stage
             }
         }
 
-        void LoadAllDatabase()
+        void LoadAllDatatable()
         {
-            foreach (var value in Enum.GetValues(typeof(DatabaseType)))
+            foreach (var datatableType in Constants.dataTableTypeArray)
             {
-                ModuleDatabase.Load((DatabaseType) value);
+                ModuleDatatable.Load(datatableType);
             }
+        }
+
+
+        void FillEntityPools()
+        {
+            ModuleEntity.FillPool(EntityType.Bullet, 10);
+            ModuleEntity.FillPool(EntityType.Zombie, 10);
         }
 
     }

@@ -9,9 +9,9 @@ namespace Frame.Entity
     /// <summary>
     /// 一个shooter对应一把武器。
     /// </summary>
-    public class Shooter : EntityComponentBase<KinematicBody2D>
+    /*public class Shooter : EntityComponentBase<KinematicBody2D>
     {
-        /*/// <summary>
+        /#1#// <summary>
         /// 持有枪支。
         /// </summary>
         protected readonly List<GunsData> guns = new List<GunsData>();
@@ -19,7 +19,7 @@ namespace Frame.Entity
         /// <summary>
         /// 当前使用的枪支。
         /// </summary>
-        protected GunsData activeGun;*/
+        protected GunsData activeGun;#1#
 
         /// <summary>
         /// 朝向。
@@ -86,21 +86,19 @@ namespace Frame.Entity
             orientation = Vector2.Zero;
             isCooling = false;
             activeGunId = -1;
-
-            // 测试
-            ChangeGun(2);
         }
         
         protected override void Init()
         {
-            Entity.LoginBehaviorCondition<BehaviorFire>(CanFire);
-            Entity.LoginBehaviorExecutor<BehaviorFire>(Fire);
+            Entity.LoginBehaviorCondition<BehaviorShoot>(CanFire);
+            Entity.LoginBehaviorExecutor<BehaviorShoot>(Fire);
+            Entity.LoginBehaviorExecutor<BehaviorChangeGun>(ChangeGun);
         }
 
-        private void ChangeGun(int gunId)
+        protected virtual void ChangeGun(Node entity, BehaviorChangeGun behavior)
         {
-            activeGunId = gunId;
-            var activeGunInfo = ModuleDatabase.GetData(DatabaseType.Guns, gunId);
+            activeGunId = behavior.gunId;
+            var activeGunInfo = ModuleDatabase.GetData(DatatableType.Guns, activeGunId);
             activeGunName = activeGunInfo["name"];
             foreach (var pair in activeGunInfo)
             {
@@ -119,7 +117,7 @@ namespace Frame.Entity
         }
 
 
-        private bool CanFire(Object entity, BehaviorFire behavior)
+        private bool CanFire(Node entity, BehaviorShoot behavior)
         {
             return !isCooling && activeGunId >= 0;
         }
@@ -152,7 +150,7 @@ namespace Frame.Entity
 
         }
 
-        protected virtual void Fire(Object entity, BehaviorFire behavior)
+        protected virtual void Fire(Node entity, BehaviorShoot behavior)
         {
             if (bulletCount > 0)
             {
@@ -186,7 +184,7 @@ namespace Frame.Entity
             }
             
             // 生成子弹实体，并控制它的方向和速度。
-            var bullet = ModuleEntity.Spawn2D(EntityType.Bullet, Entity.GlobalPosition);
+            var bullet = ModuleEntity.Spawn(EntityType.Bullet, Entity.GlobalPosition);
             bullet.SetValue("movedRange", shootRange);
             bullet.SetValue("speed", bulletSpeed);
             bullet.SetValue("raycastLayer", shootLayer);
@@ -210,5 +208,5 @@ namespace Frame.Entity
 
 
 
-    }
+    }*/
 }

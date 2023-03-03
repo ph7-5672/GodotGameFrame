@@ -4,7 +4,7 @@ using Godot;
 
 namespace Frame.Entity
 {
-    public class Zombie : EntityComponentBase<KinematicBody2D>
+    /*public class Zombie : EntityComponentBase<KinematicBody2D>
     {
         
 
@@ -12,5 +12,5 @@ namespace Frame.Entity
         {
             //ModuleEvent.Send(new EventArrowInput(new Vector2(1f, 0f)), Entity);
         }
-    }
+    }*/
 }

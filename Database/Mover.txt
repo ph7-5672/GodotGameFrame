@@ -1,0 +1,6 @@
+*	entityType	speed	bounce	
+#	实体类型	对应文件名	默认移动速度	弹跳力
+0	Police	5	2	
+1	Doctor	4	2	
+2	Soldier	6	2	
+3	Zombie	5	2	

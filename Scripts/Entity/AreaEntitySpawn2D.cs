@@ -66,13 +66,13 @@ namespace Frame.Entity
         {
             if (canSpawn)
             {
-                Spawn2D();
+                Spawn();
             }
             
             Tick(delta);
         }
 
-        void Spawn2D()
+        void Spawn()
         {
             var count = UtilityRandom.Next(singleMinCount, singleMaxCount);
             // 限制生成次数，不超过设定的最大值。
@@ -87,7 +87,8 @@ namespace Frame.Entity
             {
                 // 取随机位置。
                 var randomPosition = GetRandomPosition();
-                ModuleEntity.Spawn2D(entityType, randomPosition);
+                var entity = (Node2D)ModuleEntity.Spawn(entityType);
+                entity.Position = randomPosition;
             }
             spawnedCount += count;
             ++spawnedTimes;

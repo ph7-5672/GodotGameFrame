@@ -1,22 +1,9 @@
-[gd_scene load_steps=4 format=2]
-
-[ext_resource path="res://Scripts/Entity/Mover2D.cs" type="Script" id=2]
-[ext_resource path="res://Scripts/Entity/Bullet.cs" type="Script" id=3]
+[gd_scene load_steps=2 format=2]
 
 [sub_resource type="Curve" id=1]
 _data = [ Vector2( 0.0047619, 0.972727 ), 0.0, 0.0, 0, 0, Vector2( 0.995238, 0 ), 0.0, 0.0, 0, 0 ]
 
 [node name="Bullet" type="Line2D"]
-points = PoolVector2Array( -33, -15 )
 width = 2.0
 width_curve = SubResource( 1 )
 default_color = Color( 0.054902, 0.901961, 0.72549, 1 )
-
-[node name="Mover2D" type="Node" parent="."]
-script = ExtResource( 2 )
-defaultSpeed = 20.0
-raycastWidth = 1.0
-processMode = 1
-
-[node name="Bullet" type="Node" parent="."]
-script = ExtResource( 3 )

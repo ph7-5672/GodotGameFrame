@@ -16,7 +16,7 @@ namespace Frame.Module
         /// </summary>
         /// <param name="entity"></param>
         /// <param name="condition"></param>
-        public static void LoginCondition(Object entity, Condition<T> condition)
+        public static void LoginCondition(Node entity, Condition<T> condition)
         {
             var key = entity.GetInstanceId();
             if (conditionDict.TryGetValue(key, out var conditions))
@@ -30,12 +30,23 @@ namespace Frame.Module
             }
         }
 
+
+        public static void LogoutCondition(Node entity, Condition<T> condition)
+        {
+            var key = entity.GetInstanceId();
+            if (conditionDict.TryGetValue(key, out var conditions))
+            {
+                conditions -= condition;
+                conditionDict[key] = conditions;
+            }
+        }
+
         /// <summary>
         /// 注册执行节点。
         /// </summary>
         /// <param name="entity"></param>
         /// <param name="executor"></param>
-        public static void LoginExecutor(Object entity, Executor<T> executor)
+        public static void LoginExecutor(Node entity, Executor<T> executor)
         {
             var key = entity.GetInstanceId();
             if (executorDict.TryGetValue(key, out var executors))
@@ -48,9 +59,20 @@ namespace Frame.Module
                 executorDict.Add(key, executor);
             }
         }
+        
+        
+        public static void LogoutExecutor(Node entity, Executor<T> executor)
+        {
+            var key = entity.GetInstanceId();
+            if (executorDict.TryGetValue(key, out var executors))
+            {
+                executors -= executor;
+                executorDict[key] = executors;
+            }
+        }
 
 
-        public static bool Behave(Object entity, T behavior)
+        public static bool Behave(Node entity, T behavior)
         {
             var key = entity.GetInstanceId();
             if (conditionDict.TryGetValue(key, out var conditions))

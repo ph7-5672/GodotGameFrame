@@ -1,5 +1,0 @@
-*,entityType,shootLayer
-#,实体类型，对应文件名,射击生效层级
-0,Police,5
-1,Doctor,5
-2,Soldier,5

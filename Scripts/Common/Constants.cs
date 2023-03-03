@@ -1,16 +1,22 @@
+using System;
+
 namespace Frame.Common
 {
     public static class Constants
     {
         public const string resourceRoot = "res://";
         public const string sceneSuffix = ".tscn";
-        public const string databaseSuffix = ".csv";
+        public const string databaseSuffix = ".txt";
 
         /// <summary>
         /// 单位米。
         /// </summary>
         public const float unitMeter = 20f;
 
+        public static readonly ValueType[] valueTypeArray = Enum.GetValues(typeof(ValueType)) as ValueType[];
+        public static readonly LogicType[] logicTypeArray = Enum.GetValues(typeof(LogicType)) as LogicType[];
+        public static readonly EntityType[] entityTypeArray = Enum.GetValues(typeof(EntityType)) as EntityType[];
+        public static readonly DatatableType[] dataTableTypeArray = Enum.GetValues(typeof(DatatableType)) as DatatableType[];
     }
 
     public enum EntityType
@@ -30,6 +36,23 @@ namespace Frame.Common
     }
 
 
+    public enum ValueType
+    {
+        Hero,
+        Move2D,
+        Move2DPlatform,
+        Move2DTopDown,
+        Shooter,
+        Health,
+        Bullet
+    }
+
+    public enum LogicType
+    {
+        Player,
+        Move2D,
+    }
+
 
     public enum FormType
     {
@@ -42,11 +65,10 @@ namespace Frame.Common
         Test
     }
 
-    public enum DatabaseType
+    public enum DatatableType
     {
         Guns,
         Mover,
-        Shooter,
     }
 
 
@@ -61,6 +83,24 @@ namespace Frame.Common
         /// 实体生成事件。
         /// </summary>
         EntitySpawn,
+        
+        /// <summary>
+        /// 实体设置属性。
+        /// </summary>
+        EntitySetValue,
+    }
+
+    public enum ProcessMode
+    {
+        Idle,
+        Physics
+    }
+
+    public enum MoveMode
+    {
+        Translate,
+        MoveAndSlide,
+        MoveAndSlideWithSnap
     }
 
 }

@@ -1,5 +1,0 @@
-*,name,shootInterval,shootRange,magazine,reloadTime,bulletSpeed,bulletSpec,bulletDamage,shootSpread
-#,名字,射击间隔（秒）,射程（米）,弹匣容量,换弹时间,子弹速度,子弹规格（毫米）,伤害值,扩散角度
-0,USP,0.33,20,12,2.7,50,11.43,3,3
-1,沙漠之鹰,0.5,27,7,2.7,30,11.176,6,10
-2,M4A1,0.1,360,30,3,36,5.56,4,5

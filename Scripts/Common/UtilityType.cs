@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Reflection;
 using System.Reflection.Emit;
 
@@ -6,6 +7,9 @@ namespace Frame.Common
 {
     public static class UtilityType
     {
+        
+        public static Assembly[] Assemblies = AppDomain.CurrentDomain.GetAssemblies();
+        
         public static bool TryGetAttribute<T>(this MethodInfo method, out T attribute) where T : Attribute
         {
             attribute = method.GetCustomAttribute<T>();

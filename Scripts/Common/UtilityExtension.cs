@@ -9,32 +9,6 @@ namespace Frame.Common
 {
     public static class UtilityExtension
     {
-        public static List<Node> GetComponents(this Node entity)
-        {
-            var result = new List<Node>();
-            foreach (var child in entity.GetChildren())
-            {
-                if (child is IEntityComponent && child is Node node)
-                {
-                    result.Add(node);
-                }
-            }
-            return result;
-        }
-
-
-        public static bool HasComponent<T>(this Node entity) where T : IEntityComponent
-        {
-            foreach (var child in entity.GetChildren())
-            {
-                if (child is T component)
-                {
-                    return true;
-                }
-            }
-
-            return false;
-        }
 
 
         public static bool IsEntity(this Node node)
@@ -61,7 +35,7 @@ namespace Frame.Common
             return split[2];
         }
 
-        
+
         /// <summary>
         /// 射线检测第一个实体。
         /// </summary>
@@ -80,40 +54,48 @@ namespace Frame.Common
 
 
 
-        public static void LoginBehaviorCondition<T>(this Object entity, Condition<T> condition) where T : struct
+        public static void LoginBehaviorCondition<T>(this Node entity, Condition<T> condition) where T : struct
         {
             ModuleBehavior<T>.LoginCondition(entity, condition);
         }
 
-        public static void LoginBehaviorExecutor<T>(this Object entity, Executor<T> executor) where T : struct
+        public static void LoginBehaviorExecutor<T>(this Node entity, Executor<T> executor) where T : struct
         {
             ModuleBehavior<T>.LoginExecutor(entity, executor);
         }
+        
+        public static void LogoutBehaviorCondition<T>(this Node entity, Condition<T> condition) where T : struct
+        {
+            ModuleBehavior<T>.LogoutCondition(entity, condition);
+        }
+        
+        public static void LogoutBehaviorExecutor<T>(this Node entity, Executor<T> executor) where T : struct
+        {
+            ModuleBehavior<T>.LogoutExecutor(entity, executor);
+        }
 
-        public static bool Behave<T>(this Object entity, T behavior) where T : struct
+        public static bool Behave<T>(this Node entity, T behavior) where T : struct
         {
             return ModuleBehavior<T>.Behave(entity, behavior);
         }
 
-
-
-        public static float GetValue(this Node2D entity, string name)
+        public static bool TryGetValue<T>(this Node entity, ValueType valueType, out T value)
+            where T : struct, IEntityValue
         {
-            return ModuleEntity.GetValue(entity, name);
+            return ModuleEntity.TryGetValue<T>(entity, valueType, out value);
         }
 
 
-        public static int GetIntValue(this Node2D entity, string name)
+        public static void SetValue(this Node entity, ValueType valueType, IEntityValue value) 
         {
-            return (int) GetValue(entity, name);
+            ModuleEntity.SetValue(entity, valueType, value);
         }
 
-        public static void SetValue(this Node2D entity, string name, float value)
+        public static bool HasValue(this Node entity, ValueType valueType)
         {
-            ModuleEntity.SetValue(entity, name, value);
+            return ModuleEntity.HasValue(entity, valueType);
         }
-
-
+        
 
     }
 }
