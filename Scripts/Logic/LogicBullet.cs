@@ -1,5 +1,4 @@
 using Frame.Common;
-using Frame.Module;
 using Godot;
 using Godot.Collections;
 
@@ -43,13 +42,13 @@ namespace Frame.Logic
                 }
                 else
                 {
-                    ModuleEntity.Kill(line2D);
+                    GameFrame.Entity.Kill(line2D);
                 }
                 return;
             }
             
             // 子弹拖尾 begin
-            var bullet = GetValue<ValueBullet>(entity);
+            var bullet = entity.GetValue<ValueBullet>();
             var lastPosition = Vector2.Zero;
                 
             if (pointCount > 0)

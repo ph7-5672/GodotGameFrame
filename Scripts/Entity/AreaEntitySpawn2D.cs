@@ -87,7 +87,7 @@ namespace Frame.Entity
             {
                 // 取随机位置。
                 var randomPosition = GetRandomPosition();
-                var entity = (Node2D)ModuleEntity.Spawn(entityType);
+                var entity = (Node2D)GameFrame.Entity.Spawn(entityType);
                 entity.Position = randomPosition;
             }
             spawnedCount += count;

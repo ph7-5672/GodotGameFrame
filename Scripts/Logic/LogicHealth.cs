@@ -1,6 +1,4 @@
-using System.Diagnostics;
 using Frame.Common;
-using Frame.Module;
 using Godot;
 
 namespace Frame.Logic
@@ -32,10 +30,8 @@ namespace Frame.Logic
 
         private void AddHp(Node entity, float value)
         {
-            if (entity.TryGetValue(ValueType, out ValueHealth health))
-            {
-                UpdateHp(entity, health, health.point + value);
-            }
+            var health = entity.GetValue<ValueHealth>();
+            UpdateHp(entity, health, health.point + value);
         }
 
 
@@ -43,19 +39,16 @@ namespace Frame.Logic
         {
             if (value <= 0)
             {
-                ModuleEvent.Send(EventType.EntityZeroHp, entity);
+                GameFrame.Event.Send(EventType.EntityZeroHp, entity);
             }
             health.point = Mathf.Clamp(value, 0f, health.limit.final);
-            entity.SetValue(ValueType, health);
+            entity.SetValue(health);
         }
 
         public static bool IsAlive(Node entity)
         {
-            if (entity.TryGetValue(ValueType.Health, out ValueHealth value))
-            {
-                return value.point > 0;
-            }
-            return true;
+            var health = entity.GetValue<ValueHealth>();
+            return health.point > 0 && health.limit.final > 0;
         }
 
         private bool CanShoot(Node entity, BehaviorShoot behavior) => IsAlive(entity);

@@ -15,16 +15,16 @@ namespace Frame.Module
         /// </summary>
         /// <param name="path">路径</param>
         /// <returns></returns>
-        public static PackedScene Load(string path)
+        public PackedScene Load(string path)
         {
-            if (!Instance.scenesCache.TryGetValue(path, out var packedScene))
+            if (!scenesCache.TryGetValue(path, out var packedScene))
             {
                 packedScene = GD.Load<PackedScene>($"{Constants.resourceRoot}{path}{Constants.sceneSuffix}");
                 if (packedScene == null)
                 {
                     throw new Exception($"指定路径下没有场景。{path}");
                 }
-                Instance.scenesCache.Add(path, packedScene);
+                scenesCache.Add(path, packedScene);
             }
             return packedScene;
         }
@@ -36,7 +36,7 @@ namespace Frame.Module
         /// <param name="parent">指定父节点</param>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
-        public static T LoadInstance<T>(string path, Node parent = null) where T : Node
+        public T LoadInstance<T>(string path, Node parent = null) where T : Node
         {
             var packedScene = Load(path);
             if (!packedScene.CanInstance())
@@ -54,7 +54,7 @@ namespace Frame.Module
         /// </summary>
         /// <param name="sceneType"></param>
         /// <returns></returns>
-        public static Node LoadScene(SceneType sceneType)
+        public Node LoadScene(SceneType sceneType)
         {
             return LoadInstance<Node>($"Scenes/{sceneType.ToString()}", GameFrame.SceneRoot);
         }

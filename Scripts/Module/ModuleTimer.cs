@@ -20,18 +20,18 @@ namespace Frame.Module
         /// <param name="interval"></param>
         /// <param name="timerName"></param>
         /// <param name="isRepeat">是否重复计时</param>
-        public static Timer StartNew(object owner, float interval, string timerName, bool isRepeat = false)
+        public Timer StartNew(object owner, float interval, string timerName, bool isRepeat = false)
         {
             var dueTime = (long) (interval * 1000);
-            var timer = new Timer(o => ModuleEvent.Send(EventType.Timeout, o, timerName, isRepeat), owner, dueTime, dueTime);
-            Instance.timers.Add(timerName, timer);
+            var timer = new Timer(o => GameFrame.Event.Send(EventType.Timeout, o, timerName, isRepeat), owner, dueTime, dueTime);
+            timers.Add(timerName, timer);
             return timer;
         }
 
 
-        public static bool HasTimer(string name)
+        public bool HasTimer(string name)
         {
-            return Instance.timers.TryGetValue(name, out _);
+            return timers.TryGetValue(name, out _);
         }
 
         [Event(EventType.Timeout)]

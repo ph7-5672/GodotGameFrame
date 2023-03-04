@@ -54,19 +54,5 @@ namespace Frame.Logic
                 PhysicsProcess(t, delta);
             }
         }
-
-        protected TV GetValue<TV>(Node entity) where TV : struct, IEntityValue
-        {
-            if (entity.TryGetValue(ValueType, out TV value))
-            {
-                return value;
-            }
-            return default;
-        }
-
-        protected void SetValue<TV>(Node entity, TV value) where TV : struct, IEntityValue
-        {
-            entity.SetValue(ValueType, value);
-        }
     }
 }

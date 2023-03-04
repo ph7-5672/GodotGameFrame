@@ -17,39 +17,39 @@ namespace Frame.Module
         /// </summary>
         /// <param name="entity"></param>
         /// <param name="condition"></param>
-        public static void LoginCondition<T>(Node entity, Condition<T> condition) where T : struct, IEntityBehavior
+        public void LoginCondition<T>(Node entity, Condition<T> condition) where T : struct, IEntityBehavior
         {
             var key = entity.GetInstanceId();
             var index = (int) new T().Type;
-            if (!Instance.conditionDict.TryGetValue(key, out var delegates))
+            if (!conditionDict.TryGetValue(key, out var delegates))
             {
                 delegates = new Delegate[Constants.behaviorTypeArray.Length];
                 delegates[index] = condition;
-                Instance.conditionDict.Add(key, delegates);
+                conditionDict.Add(key, delegates);
             }
             else if (delegates[index] is Condition<T> conditions)
             {
                 conditions += condition;
                 delegates[index] = conditions;
-                Instance.conditionDict[key] = delegates;
+                conditionDict[key] = delegates;
             }
             else
             {
                 delegates[index] = condition;
             }
+            
         }
-
-
-        public static void LogoutCondition<T>(Node entity, Condition<T> condition) where T : struct, IEntityBehavior
+        
+        public void LogoutCondition<T>(Node entity, Condition<T> condition) where T : struct, IEntityBehavior
         {
             var key = entity.GetInstanceId();
             var index = (int) new T().Type;
-            if (Instance.conditionDict.TryGetValue(key, out var delegates) &&
+            if (conditionDict.TryGetValue(key, out var delegates) &&
                 delegates[index] is Condition<T> conditions)
             {
                 conditions -= condition;
                 delegates[index] = conditions;
-                Instance.conditionDict[key] = delegates;
+                conditionDict[key] = delegates;
             }
         }
 
@@ -58,21 +58,22 @@ namespace Frame.Module
         /// </summary>
         /// <param name="entity"></param>
         /// <param name="executor"></param>
-        public static void LoginExecutor<T>(Node entity, Executor<T> executor) where T : struct, IEntityBehavior
+        public void LoginExecutor<T>(Node entity, Executor<T> executor) where T : struct, IEntityBehavior
         {
             var key = entity.GetInstanceId();
             var index = (int) new T().Type;
-            if (!Instance.executorDict.TryGetValue(key, out var delegates))
+            
+            if (!executorDict.TryGetValue(key, out var delegates))
             {
                 delegates = new Delegate[Constants.behaviorTypeArray.Length];
                 delegates[index] = executor;
-                Instance.executorDict.Add(key, delegates);
+                executorDict.Add(key, delegates);
             }
             else if (delegates[index] is Executor<T> executors)
             {
                 executors += executor;
                 delegates[index] = executors;
-                Instance.executorDict[key] = delegates;
+                executorDict[key] = delegates;
             }
             else
             {
@@ -80,26 +81,25 @@ namespace Frame.Module
             }
         }
 
-
-        public static void LogoutExecutor<T>(Node entity, Executor<T> executor) where T : struct, IEntityBehavior
+        public void LogoutExecutor<T>(Node entity, Executor<T> executor) where T : struct, IEntityBehavior
         {
             var key = entity.GetInstanceId();
             var index = (int) new T().Type;
-            if (Instance.executorDict.TryGetValue(key, out var delegates) && delegates[index] is Executor<T> executors)
+            if (executorDict.TryGetValue(key, out var delegates) && delegates[index] is Executor<T> executors)
             {
                 executors -= executor;
                 delegates[index] = executors;
-                Instance.executorDict[key] = delegates;
+                executorDict[key] = delegates;
             }
         }
 
 
-        public static bool Behave<T>(Node entity, T behavior) where T : struct, IEntityBehavior
+        public bool Behave<T>(Node entity, T behavior) where T : struct, IEntityBehavior
         {
             var key = entity.GetInstanceId();
             var index = (int) new T().Type;
 
-            if (Instance.conditionDict.TryGetValue(key, out var conditionDelegates) &&
+            if (conditionDict.TryGetValue(key, out var conditionDelegates) &&
                 conditionDelegates[index] is Condition<T> conditions)
             {
                 if (conditions.GetInvocationList().AsParallel()
@@ -109,13 +109,30 @@ namespace Frame.Module
                 }
             }
 
-            if (Instance.executorDict.TryGetValue(key, out var executorDelegates) &&
+            if (executorDict.TryGetValue(key, out var executorDelegates) &&
                 executorDelegates[index] is Executor<T> executors)
             {
                 executors(entity, behavior);
             }
 
             return true;
+        }
+        
+        [Event(EventType.EntitySpawn)]
+        public void OnEntitySpawn(EntityType type, Node entity)
+        {
+            var key = entity.GetInstanceId();
+            if (!conditionDict.TryGetValue(key, out var conditions))
+            {
+                conditions = new Delegate[Constants.behaviorTypeArray.Length];
+                conditionDict.Add(key, conditions);
+            }
+            
+            if (!executorDict.TryGetValue(key, out var executors))
+            {
+                executors = new Delegate[Constants.behaviorTypeArray.Length];
+                executorDict.Add(key, executors);
+            }
         }
     }
 }

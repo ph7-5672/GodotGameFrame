@@ -9,12 +9,12 @@ namespace Frame.Module
 
         private readonly List<IReadOnlyList<string>>[] tables = new List<IReadOnlyList<string>>[Constants.datatableTypeArray.Length];
 
-        public static void Load(DatatableType datatableType)
+        public void Load(DatatableType datatableType)
         {
             var file = new File();
             file.Open($"{Constants.resourceRoot}Database/{datatableType}{Constants.databaseSuffix}", File.ModeFlags.Read);
             var index = (int) datatableType;
-            var list = Instance.tables[index];
+            var list = tables[index];
             if (list == null)
             {
                 list = new List<IReadOnlyList<string>>();
@@ -33,16 +33,16 @@ namespace Frame.Module
                 }
             }
             
-            Instance.tables[index] = list;
+            tables[index] = list;
             file.Close();
             file.Dispose();
         }
 
 
 
-        public static IReadOnlyList<string> GetDatatable(DatatableType datatableType, int index)
+        public IReadOnlyList<string> GetDatatable(DatatableType datatableType, int index)
         {
-            var table = Instance.tables[(int) datatableType];
+            var table = tables[(int) datatableType];
             return table[index];
         }
 

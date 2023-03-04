@@ -11,12 +11,12 @@ namespace Frame.Module
         private readonly Dictionary<EventType, List<MethodInfo>> eventMethods = new Dictionary<EventType, List<MethodInfo>>();
         
 
-        public static void Subscribe(EventType eventType, MethodInfo method)
+        public void Subscribe(EventType eventType, MethodInfo method)
         {
-            if (!Instance.eventMethods.TryGetValue(eventType, out var methods))
+            if (!eventMethods.TryGetValue(eventType, out var methods))
             {
                 methods = new List<MethodInfo>();
-                Instance.eventMethods.Add(eventType, methods);
+                eventMethods.Add(eventType, methods);
             }
 
             methods.Add(method);
@@ -28,9 +28,9 @@ namespace Frame.Module
         /// </summary>
         /// <param name="eventType"></param>
         /// <param name="args"></param>
-        public static void Send(EventType eventType, params object[] args)
+        public void Send(EventType eventType, params object[] args)
         {
-            if (Instance.eventMethods.TryGetValue(eventType, out var methods))
+            if (eventMethods.TryGetValue(eventType, out var methods))
             {
                 foreach (var method in methods)
                 {

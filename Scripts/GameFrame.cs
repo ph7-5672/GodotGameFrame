@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Frame.Common;
-using Frame.Logic;
 using Frame.Module;
 using Frame.Stage;
 using Godot;
@@ -22,16 +21,32 @@ namespace Frame
 
         public static List<IEntityLogic> Logics { get; } = new List<IEntityLogic>();
 
+        public static ModuleBehavior Behavior { get; private set; }
+        public static ModuleDatatable Datatable { get; private set; }
+        public static ModuleEntity Entity { get; private set; }
+        public static ModuleEvent Event { get; private set; }
+        public static ModuleForm Form { get; private set; }
+        public static ModuleScene Scene { get; private set; }
+        public static ModuleStage Stage { get; private set; }
+        public static ModuleTimer Timer { get; private set; }
 
         public override void _Ready()
         {
             FormRoot = GetNode<CanvasLayer>(nameof(FormRoot));
             EntityRoot = GetNode<Node>(nameof(EntityRoot));
             SceneRoot = GetNode<Node>(nameof(SceneRoot));
-            
+
+            Behavior = ModuleBehavior.Instance;
+            Datatable = ModuleDatatable.Instance;
+            Entity = ModuleEntity.Instance;
+            Event = ModuleEvent.Instance;
+            Form = ModuleForm.Instance;
+            Scene = ModuleScene.Instance;
+            Stage = ModuleStage.Instance;
+            Timer = ModuleTimer.Instance;
             AddLogics();
             
-            ModuleStage.ChangeStage<StagePreload>();
+            Stage.ChangeStage<StagePreload>();
         }
 
 
@@ -39,7 +54,8 @@ namespace Frame
         {
             foreach (var assembly in UtilityType.Assemblies)
             {
-                foreach (var type in assembly.GetTypes().Where(t => t.GetInterface(nameof(IEntityLogic)) != null && !t.IsAbstract))
+                foreach (var type in assembly.GetTypes()
+                    .Where(t => t.GetInterface(nameof(IEntityLogic)) != null && !t.IsAbstract))
                 {
                     var instance = (IEntityLogic) Activator.CreateInstance(type);
                     Logics.Add(instance);
@@ -66,32 +82,11 @@ namespace Frame
         public override void _Process(float delta)
         {
             ForeachLogics(logic => ForeachEntities(entity => logic.Process(entity, delta)));
-            /*foreach (var logic in Logics)
-            {
-                foreach (Node entity in EntityRoot.GetChildren())
-                {
-                    logic.Process(entity, delta);
-                }
-            }*/
         }
 
         public override void _PhysicsProcess(float delta)
         {
             ForeachLogics(logic => ForeachEntities(entity => logic.PhysicsProcess(entity, delta)));
-            /*foreach (var logic in Logics)
-            {
-                foreach (Node entity in EntityRoot.GetChildren())
-                {
-                    logic.PhysicsProcess(entity, delta);
-                }
-            }*/
-            
-            /*foreach (Node entity in EntityRoot.GetChildren())
-            {
-                ModuleEntity.LogicForeach(entity, logic => logic.PhysicsProcess(delta));
-            }*/
         }
     }
 }
-
-

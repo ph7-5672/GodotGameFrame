@@ -54,44 +54,48 @@ namespace Frame.Common
 
         public static void LoginBehaviorCondition<T>(this Node entity, Condition<T> condition) where T : struct, IEntityBehavior
         {
-            ModuleBehavior.LoginCondition(entity, condition);
+            GameFrame.Behavior.LoginCondition(entity, condition);
         }
 
         public static void LoginBehaviorExecutor<T>(this Node entity, Executor<T> executor) where T : struct, IEntityBehavior
         {
-            ModuleBehavior.LoginExecutor(entity, executor);
+            GameFrame.Behavior.LoginExecutor(entity, executor);
         }
         
         public static void LogoutBehaviorCondition<T>(this Node entity, Condition<T> condition) where T : struct, IEntityBehavior
         {
-            ModuleBehavior.LogoutCondition(entity, condition);
+            GameFrame.Behavior.LogoutCondition(entity, condition);
         }
         
         public static void LogoutBehaviorExecutor<T>(this Node entity, Executor<T> executor) where T : struct, IEntityBehavior
         {
-            ModuleBehavior.LogoutExecutor(entity, executor);
+            GameFrame.Behavior.LogoutExecutor(entity, executor);
         }
 
         public static bool Behave<T>(this Node entity, T behavior) where T : struct, IEntityBehavior
         {
-            return ModuleBehavior.Behave(entity, behavior);
+            return GameFrame.Behavior.Behave(entity, behavior);
         }
 
-        public static bool TryGetValue<T>(this Node entity, ValueType valueType, out T value)
-            where T : struct, IEntityValue
+        public static T GetValue<T>(this Node entity) where T : struct, IEntityValue
         {
-            return ModuleEntity.TryGetValue(entity, valueType, out value);
+            return GameFrame.Entity.GetValue<T>(entity);
         }
 
 
-        public static void SetValue(this Node entity, ValueType valueType, IEntityValue value) 
+        public static void SetValue(this Node entity, IEntityValue value) 
         {
-            ModuleEntity.SetValue(entity, valueType, value);
+            GameFrame.Entity.SetValue(entity, value);
         }
 
         public static bool HasValue(this Node entity, ValueType valueType)
         {
-            return ModuleEntity.HasValue(entity, valueType);
+            return GameFrame.Entity.HasValue(entity, valueType);
+        }
+
+        public static bool HasValue<T>(this Node entity) where T : struct, IEntityValue
+        {
+            return GameFrame.Entity.HasValue<T>(entity);
         }
         
 

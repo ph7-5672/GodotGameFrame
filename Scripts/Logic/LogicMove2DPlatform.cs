@@ -16,65 +16,53 @@ namespace Frame.Logic
         {
             entity.LogoutBehaviorExecutor<BehaviorMove>(Move);
         }
-
-        protected override void Process(KinematicBody2D entity, float delta)
-        {
-        }
-
+        
         protected override void PhysicsProcess(KinematicBody2D entity, float delta)
         {
-            if (!entity.TryGetValue(ValueType.Move2DPlatform, out ValueMove2DPlatform value))
-            {
-                return;
-            }
-            
+            var move2DPlatform = entity.GetValue<ValueMove2DPlatform>();
             const float gravity = 9.8f;
-            value.velocity.y += gravity * delta * Constants.unitMeter;
+            move2DPlatform.velocity.y += gravity * delta * Constants.unitMeter;
             
-            value.isOnFloor = entity.IsOnFloor();
-            if (value.isOnFloor)
+            move2DPlatform.isOnFloor = entity.IsOnFloor();
+            if (move2DPlatform.isOnFloor)
             {
-                value.velocity.y = Mathf.Min(0f, value.velocity.y);
-                value.snap = Vector2.Down * gravity * Constants.unitMeter * delta;
+                move2DPlatform.velocity.y = Mathf.Min(0f, move2DPlatform.velocity.y);
+                move2DPlatform.snap = Vector2.Down * gravity * Constants.unitMeter * delta;
             }
             
-            var translation = new Vector2(value.velocity.x * value.speed.final, value.velocity.y);
+            var translation = new Vector2(move2DPlatform.velocity.x * move2DPlatform.speed.final, move2DPlatform.velocity.y);
             translation *= Constants.unitMeter;
             
-            entity.MoveAndSlideWithSnap(translation, value.snap, Vector2.Up, true);
+            entity.MoveAndSlideWithSnap(translation, move2DPlatform.snap, Vector2.Up, true);
             
-            entity.SetValue(ValueType.Move2DPlatform, value);
+            entity.SetValue(move2DPlatform);
         }
         
         private void Move(Node entity, BehaviorMove behavior)
         {
-            if (!entity.TryGetValue(ValueType.Move2DPlatform, out ValueMove2DPlatform value))
-            {
-                return;
-            }
-
+            var move2DPlatform = entity.GetValue<ValueMove2DPlatform>();
             // x轴移动。
-            value.velocity.x = behavior.velocity.x;
+            move2DPlatform.velocity.x = behavior.velocity.x;
             var arrowY = behavior.velocity.y;
             
-            if (!value.isOnFloor || arrowY == 0)
+            if (!move2DPlatform.isOnFloor || arrowY == 0)
             {
-                entity.SetValue(ValueType.Move2DPlatform, value);
+                entity.SetValue(move2DPlatform);
                 return;
             }
 
             // y轴跳跃或下蹲。
             if (arrowY < 0)
             {
-                value.velocity.y = -value.bounce.final * Constants.unitMeter;
-                value.snap = Vector2.Zero;
+                move2DPlatform.velocity.y = -move2DPlatform.bounce.final * Constants.unitMeter;
+                move2DPlatform.snap = Vector2.Zero;
             }
             else
             {
                 // TODO 下蹲。
             }
             
-            entity.SetValue(ValueType.Move2DPlatform, value);
+            entity.SetValue(move2DPlatform);
             
         }
         

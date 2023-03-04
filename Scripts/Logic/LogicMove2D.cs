@@ -19,19 +19,19 @@ namespace Frame.Logic
 
         protected override void Process(Node2D entity, float delta)
         {
-            if (entity.TryGetValue(ValueType.Move2D, out ValueMove2D value) &&
-                value.processMode == ProcessMode.Idle)
+            var move2D = entity.GetValue<ValueMove2D>();
+            if (move2D.processMode == ProcessMode.Idle)
             {
-                ProcessLogic(entity, value, delta);
+                ProcessLogic(entity, move2D, delta);
             }
         }
 
         protected override void PhysicsProcess(Node2D entity, float delta)
         {
-            if (entity.TryGetValue(ValueType.Move2D, out ValueMove2D value) &&
-                value.processMode == ProcessMode.Physics)
+            var move2D = entity.GetValue<ValueMove2D>();
+            if (move2D.processMode == ProcessMode.Physics)
             {
-                ProcessLogic(entity, value, delta);
+                ProcessLogic(entity, move2D, delta);
             }
         }
 
@@ -56,21 +56,22 @@ namespace Frame.Logic
 
         private void Move(Node entity, BehaviorMove behavior)
         {
-            if (entity.TryGetValue(ValueType.Move2D, out ValueMove2D value))
-            {
-                value.velocity = behavior.velocity;
-                entity.SetValue(ValueType.Move2D, value);
-            }
+            var move2D = entity.GetValue<ValueMove2D>();
+            move2D.velocity = behavior.velocity;
+            entity.SetValue(move2D);
         }
 
         [Event(EventType.EntityZeroHp)]
         public static void OnZeroHp(Node entity)
         {
-            if (entity.TryGetValue(ValueType.Move2D, out ValueMove2D move))
+            if (!entity.HasValue<ValueMove2D>())
             {
-                move.velocity = Vector2.Zero;
-                entity.SetValue(ValueType.Move2D, move);
+                return;
             }
+
+            var move2D = entity.GetValue<ValueMove2D>();
+            move2D.velocity = Vector2.Zero;
+            entity.SetValue(move2D);
         }
 
     }

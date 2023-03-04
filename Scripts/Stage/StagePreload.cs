@@ -16,8 +16,7 @@ namespace Frame.Stage
             // 填充实体对象池。
             FillEntityPools();
             
-
-            ModuleStage.ChangeStage<StageTest>();
+            GameFrame.Stage.ChangeStage<StageTest>();
         }
 
 
@@ -43,7 +42,7 @@ namespace Frame.Stage
             {
                 if (method.TryGetAttribute<EventAttribute>(out var attribute))
                 {
-                    ModuleEvent.Subscribe(attribute.eventType, method);
+                    GameFrame.Event.Subscribe(attribute.eventType, method);
                 }
             }
         }
@@ -52,15 +51,15 @@ namespace Frame.Stage
         {
             foreach (var datatableType in Constants.datatableTypeArray)
             {
-                ModuleDatatable.Load(datatableType);
+                GameFrame.Datatable.Load(datatableType);
             }
         }
 
 
         void FillEntityPools()
         {
-            ModuleEntity.FillPool(EntityType.Bullet, 10);
-            ModuleEntity.FillPool(EntityType.Zombie, 10);
+            GameFrame.Entity.FillPool(EntityType.Bullet, 10);
+            GameFrame.Entity.FillPool(EntityType.Zombie, 10);
         }
 
     }

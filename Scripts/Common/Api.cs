@@ -16,7 +16,7 @@ namespace Frame.Common
 
     public interface IEntityValue
     {
-        
+        ValueType Type { get; }
     }
 
     public interface IEntityBehavior

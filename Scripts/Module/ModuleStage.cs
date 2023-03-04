@@ -11,13 +11,13 @@ namespace Frame.Module
 
         private IStage current;
 
-        public static IStage Current
+        public IStage Current
         {
-            get => Instance.current;
-            private set => Instance.current = value;
+            get => current;
+            private set => current = value;
         }
 
-        public static void ChangeStage<T>() where T : StageBase<T>, new()
+        public void ChangeStage<T>() where T : StageBase<T>, new()
         {
             Current?.OnExit();
             Current = StageBase<T>.Instance;

@@ -1,7 +1,6 @@
 using Frame.Common;
 using Frame.Entity;
 using Frame.Form;
-using Frame.Module;
 using Godot;
 
 namespace Frame.Stage
@@ -14,21 +13,21 @@ namespace Frame.Stage
         public override void OnEnter()
         {
             
-            ModuleScene.LoadScene(SceneType.Test);
+            GameFrame.Scene.LoadScene(SceneType.Test);
             
-            playerInfoForm = (FormPlayerInfo) ModuleForm.Open(FormType.PlayerInfo);
+            playerInfoForm = (FormPlayerInfo) GameFrame.Form.Open(FormType.PlayerInfo);
             
-            playerEntity = ModuleEntity.Spawn(EntityType.Police);
-            playerEntity.SetValue(ValueType.Move2DPlatform, new ValueMove2DPlatform()
+            playerEntity = GameFrame.Entity.Spawn(EntityType.Police);
+            playerEntity.SetValue(new ValueMove2DPlatform()
             {
                 speed = new Value(10f),
                 bounce = new Value(2f)
             });
             
-            playerEntity.SetValue(ValueType.Hero, new ValueHero());
+            playerEntity.SetValue(new ValueHero());
 
-            var datatable = ModuleDatatable.GetDatatable(DatatableType.Shooter, 2);
-            playerEntity.SetValue(ValueType.Shooter, new ValueShooter(datatable)
+            var datatable = GameFrame.Datatable.GetDatatable(DatatableType.Shooter, 2);
+            playerEntity.SetValue(new ValueShooter(datatable)
             {
                 bulletCount = 30
             });
@@ -36,16 +35,15 @@ namespace Frame.Stage
         }
 
 
-
         [Event(EventType.EntitySetValue)]
-        public static void OnEntitySetValue(Node entity, ValueType valueType, IEntityValue value)
+        public static void OnEntitySetValue(Node entity, IEntityValue value)
         {
             if (Instance.playerInfoForm == null || !entity.Equals(Instance.playerEntity))
             {
                 return;
             }
 
-            if (valueType == ValueType.Shooter && value is ValueShooter shooter)
+            if (value is ValueShooter shooter)
             {
                 Instance.playerInfoForm.Refresh(shooter.bulletCount, shooter.magazine.intFinal);
             }

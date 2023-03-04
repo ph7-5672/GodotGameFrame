@@ -29,32 +29,23 @@ namespace Frame.Logic
 
         private bool CanShoot(Node entity, BehaviorShoot behavior)
         {
-            if (entity.TryGetValue(ValueType.Shooter, out ValueShooter shooter))
-            {
-                return !IsCooling(shooter) && !IsReloading(shooter);
-            }
-
-            return true;
+            var shooter = entity.GetValue<ValueShooter>();
+            return !IsCooling(shooter) && !IsReloading(shooter);
         }
 
         private bool CanReload(Node entity, BehaviorReload behavior)
         {
-            if (entity.TryGetValue(ValueType.Shooter, out ValueShooter shooter))
-            {
-                return shooter.bulletCount < shooter.magazine.intFinal && !IsCooling(shooter) && !IsReloading(shooter);
-            }
-
-            return true;
+            var shooter = entity.GetValue<ValueShooter>();
+            return shooter.bulletCount < shooter.magazine.intFinal && !IsCooling(shooter) && !IsReloading(shooter);
         }
 
         protected virtual void Shoot(Node entity, BehaviorShoot behavior)
         {
-            var shooter = GetValue<ValueShooter>(entity);
+            var shooter = entity.GetValue<ValueShooter>();
 
             if (shooter.bulletCount > 0)
             {
-                ModuleTimer.StartNew(entity, shooter.interval.final, $"{shooter.name}_cooling");
-
+                GameFrame.Timer.StartNew(entity, shooter.interval.final, $"{shooter.name}_cooling");
                 for (var i = 0; i < behavior.bulletShoot; ++i)
                 {
                     var trans = behavior.targetPosition - behavior.muzzlePosition;
@@ -70,23 +61,21 @@ namespace Frame.Logic
                     }
 
                     // 生成子弹实体，并控制它的方向和速度。
-                    if (ModuleEntity.Spawn(EntityType.Bullet) is Line2D bullet)
+                    if (GameFrame.Entity.Spawn(EntityType.Bullet) is Line2D bullet)
                     {
                         bullet.Position = behavior.muzzlePosition;
-                        var move2D = new ValueMove2D(ProcessMode.Idle)
+                        var move2D = new ValueMove2D(ProcessMode.Physics)
                         {
                             velocity = direction * shooter.bulletSpeed.final
                         };
-                        bullet.SetValue(ValueType.Move2D, move2D);
-                        bullet.SetValue(ValueType.Bullet, new ValueBullet(20f, shooter.shootLayer));
+                        bullet.SetValue(move2D);
+                        
+                        bullet.SetValue(new ValueBullet(20f, shooter.shootLayer));
                         var range = shooter.range.final * Constants.unitMeter;
-                        bullet.SetValue(ValueType.Health, new ValueHealth(range, new Value(range)));
+                        bullet.SetValue(new ValueHealth(range, new Value(range)));
                         bullet.Width = shooter.caliber.final * Constants.unitMeter / 100f;
                     }
-                    
                 }
-
-                
                 shooter.bulletCount -= behavior.bulletConsume;
             }
             else
@@ -94,19 +83,19 @@ namespace Frame.Logic
                 entity.Behave(new BehaviorReload());
             }
 
-            entity.SetValue(ValueType.Shooter, shooter);
+            entity.SetValue(shooter);
         }
 
 
         private void Reload(Node entity, BehaviorReload behavior)
         {
-            var shooter = GetValue<ValueShooter>(entity);
-            ModuleTimer.StartNew(entity, shooter.reloadTime.final, $"{shooter.name}_reloading");
+            var shooter = entity.GetValue<ValueShooter>();
+            GameFrame.Timer.StartNew(entity, shooter.reloadTime.final, $"{shooter.name}_reloading");
         }
 
-        public static bool IsReloading(ValueShooter shooter) => ModuleTimer.HasTimer($"{shooter.name}_reloading");
+        public static bool IsReloading(ValueShooter shooter) => GameFrame.Timer.HasTimer($"{shooter.name}_reloading");
 
-        public static bool IsCooling(ValueShooter shooter) => ModuleTimer.HasTimer($"{shooter.name}_cooling");
+        public static bool IsCooling(ValueShooter shooter) => GameFrame.Timer.HasTimer($"{shooter.name}_cooling");
 
 
         [Event(EventType.Timeout)]
@@ -117,17 +106,12 @@ namespace Frame.Logic
                 return;
             }
 
-            if (!entity.TryGetValue(ValueType.Shooter, out ValueShooter shooter))
-            {
-                return;
-            }
-
+            var shooter = entity.GetValue<ValueShooter>();
             if ($"{shooter.name}_reloading".Equals(timerName))
             {
                 shooter.bulletCount = shooter.magazine.intFinal;
             }
-
-            entity.SetValue(ValueType.Shooter, shooter);
+            entity.SetValue(shooter);
         }
     }
 }

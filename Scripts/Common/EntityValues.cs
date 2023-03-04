@@ -79,6 +79,8 @@ namespace Frame.Common
             this.processMode = processMode;
             velocity = Vector2.Zero;
         }
+
+        public ValueType Type => ValueType.Move2D;
     }
 
     public struct ValueMove2DPlatform : IEntityValue
@@ -88,6 +90,8 @@ namespace Frame.Common
         public bool isOnFloor;
         public Value speed;
         public Value bounce;
+        
+        public ValueType Type => ValueType.Move2DPlatform;
     }
 
 
@@ -119,10 +123,13 @@ namespace Frame.Common
             damage.basic = float.Parse(lineCsv[9]);
             spread.basic = float.Parse(lineCsv[10]);
         }
+        
+        public ValueType Type => ValueType.Shooter;
     }
 
     public readonly struct ValueHero : IEntityValue
     {
+        public ValueType Type => ValueType.Hero;
     }
 
     public readonly struct ValueBullet : IEntityValue
@@ -142,6 +149,8 @@ namespace Frame.Common
             this.tail = tail;
             this.layer = layer;
         }
+        
+        public ValueType Type => ValueType.Bullet;
     }
 
 
@@ -155,5 +164,7 @@ namespace Frame.Common
             this.point = point;
             this.limit = limit;
         }
+        
+        public ValueType Type => ValueType.Health;
     }
 }
