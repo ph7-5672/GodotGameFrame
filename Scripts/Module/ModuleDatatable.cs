@@ -7,7 +7,7 @@ namespace Frame.Module
     public class ModuleDatatable : Singleton<ModuleDatatable>
     {
 
-        private readonly List<IReadOnlyList<string>>[] tables = new List<IReadOnlyList<string>>[Constants.dataTableTypeArray.Length];
+        private readonly List<IReadOnlyList<string>>[] tables = new List<IReadOnlyList<string>>[Constants.datatableTypeArray.Length];
 
         public static void Load(DatatableType datatableType)
         {

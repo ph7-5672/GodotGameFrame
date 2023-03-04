@@ -63,5 +63,10 @@ namespace Frame.Logic
             }
             return default;
         }
+
+        protected void SetValue<TV>(Node entity, TV value) where TV : struct, IEntityValue
+        {
+            entity.SetValue(ValueType, value);
+        }
     }
 }

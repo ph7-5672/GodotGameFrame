@@ -94,7 +94,7 @@ namespace Frame.Common
     public struct ValueShooter : IEntityValue
     {
         public readonly string name;
-        public uint shootLayer;
+        public readonly uint shootLayer;
         public Value interval;
         public Value range;
         public Value magazine;
@@ -103,9 +103,8 @@ namespace Frame.Common
         public Value caliber;
         public Value damage;
         public Value spread;
-
-        public bool isCooling;
         public int bulletCount;
+        
 
         public ValueShooter(IReadOnlyList<string> lineCsv) : this()
         {
@@ -126,16 +125,22 @@ namespace Frame.Common
     {
     }
 
-    public struct ValueBullet : IEntityValue
+    public readonly struct ValueBullet : IEntityValue
     {
         /// <summary>
         /// 拖尾长度。
         /// </summary>
-        public float tail;
+        public readonly float tail;
 
-        public ValueBullet(float tail)
+        /// <summary>
+        /// 生效层级。
+        /// </summary>
+        public readonly uint layer;
+
+        public ValueBullet(float tail, uint layer)
         {
             this.tail = tail;
+            this.layer = layer;
         }
     }
 

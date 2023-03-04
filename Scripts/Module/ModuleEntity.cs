@@ -105,9 +105,15 @@ namespace Frame.Module
             values[index] = value;
             if (origin == null)
             {
-                GameFrame.ForeachLogics(logic => logic.Ready(entity));
+                for (var i = 0; i < GameFrame.Logics.Count; ++i)
+                {
+                    GameFrame.Logics[i].Ready(entity);
+                }
+
+                //GameFrame.ForeachLogics(logic => logic.Ready(entity));
             }
 
+            ModuleEvent.Send(EventType.EntitySetValue, entity, valueType, value);
             
         }
         

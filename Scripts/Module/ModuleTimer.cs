@@ -10,7 +10,7 @@ namespace Frame.Module
     /// </summary>
     public class ModuleTimer : Singleton<ModuleTimer>
     {
-        private static readonly Dictionary<string, Timer> timers = new Dictionary<string, Timer>();
+        private readonly Dictionary<string, Timer> timers = new Dictionary<string, Timer>();
 
         /// <summary>
         /// 开启一个新的计时器。
@@ -24,17 +24,23 @@ namespace Frame.Module
         {
             var dueTime = (long) (interval * 1000);
             var timer = new Timer(o => ModuleEvent.Send(EventType.Timeout, o, timerName, isRepeat), owner, dueTime, dueTime);
-            timers.Add(timerName, timer);
+            Instance.timers.Add(timerName, timer);
             return timer;
+        }
+
+
+        public static bool HasTimer(string name)
+        {
+            return Instance.timers.TryGetValue(name, out _);
         }
 
         [Event(EventType.Timeout)]
         public static void OnTimeout(object owner, string timerName, bool isRepeat)
         {
-            if (!isRepeat && timers.TryGetValue(timerName, out var timer))
+            if (!isRepeat && Instance.timers.TryGetValue(timerName, out var timer))
             {
                 timer.Dispose();
-                timers.Remove(timerName);
+                Instance.timers.Remove(timerName);
             }
         }
 

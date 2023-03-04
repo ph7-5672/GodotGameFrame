@@ -52,37 +52,35 @@ namespace Frame.Common
 
         }
 
-
-
-        public static void LoginBehaviorCondition<T>(this Node entity, Condition<T> condition) where T : struct
+        public static void LoginBehaviorCondition<T>(this Node entity, Condition<T> condition) where T : struct, IEntityBehavior
         {
-            ModuleBehavior<T>.LoginCondition(entity, condition);
+            ModuleBehavior.LoginCondition(entity, condition);
         }
 
-        public static void LoginBehaviorExecutor<T>(this Node entity, Executor<T> executor) where T : struct
+        public static void LoginBehaviorExecutor<T>(this Node entity, Executor<T> executor) where T : struct, IEntityBehavior
         {
-            ModuleBehavior<T>.LoginExecutor(entity, executor);
+            ModuleBehavior.LoginExecutor(entity, executor);
         }
         
-        public static void LogoutBehaviorCondition<T>(this Node entity, Condition<T> condition) where T : struct
+        public static void LogoutBehaviorCondition<T>(this Node entity, Condition<T> condition) where T : struct, IEntityBehavior
         {
-            ModuleBehavior<T>.LogoutCondition(entity, condition);
+            ModuleBehavior.LogoutCondition(entity, condition);
         }
         
-        public static void LogoutBehaviorExecutor<T>(this Node entity, Executor<T> executor) where T : struct
+        public static void LogoutBehaviorExecutor<T>(this Node entity, Executor<T> executor) where T : struct, IEntityBehavior
         {
-            ModuleBehavior<T>.LogoutExecutor(entity, executor);
+            ModuleBehavior.LogoutExecutor(entity, executor);
         }
 
-        public static bool Behave<T>(this Node entity, T behavior) where T : struct
+        public static bool Behave<T>(this Node entity, T behavior) where T : struct, IEntityBehavior
         {
-            return ModuleBehavior<T>.Behave(entity, behavior);
+            return ModuleBehavior.Behave(entity, behavior);
         }
 
         public static bool TryGetValue<T>(this Node entity, ValueType valueType, out T value)
             where T : struct, IEntityValue
         {
-            return ModuleEntity.TryGetValue<T>(entity, valueType, out value);
+            return ModuleEntity.TryGetValue(entity, valueType, out value);
         }
 
 

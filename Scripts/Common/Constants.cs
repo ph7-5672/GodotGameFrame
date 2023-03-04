@@ -16,7 +16,8 @@ namespace Frame.Common
         public static readonly ValueType[] valueTypeArray = Enum.GetValues(typeof(ValueType)) as ValueType[];
         public static readonly LogicType[] logicTypeArray = Enum.GetValues(typeof(LogicType)) as LogicType[];
         public static readonly EntityType[] entityTypeArray = Enum.GetValues(typeof(EntityType)) as EntityType[];
-        public static readonly DatatableType[] dataTableTypeArray = Enum.GetValues(typeof(DatatableType)) as DatatableType[];
+        public static readonly DatatableType[] datatableTypeArray = Enum.GetValues(typeof(DatatableType)) as DatatableType[];
+        public static readonly BehaviorType[] behaviorTypeArray = Enum.GetValues(typeof(BehaviorType)) as BehaviorType[];
     }
 
     public enum EntityType
@@ -67,8 +68,8 @@ namespace Frame.Common
 
     public enum DatatableType
     {
-        Guns,
-        Mover,
+        Shooter,
+        Hero,
     }
 
 
@@ -88,19 +89,28 @@ namespace Frame.Common
         /// 实体设置属性。
         /// </summary>
         EntitySetValue,
+        
+        /// <summary>
+        /// 血量归零。
+        /// </summary>
+        EntityZeroHp,
+    }
+
+
+    public enum BehaviorType
+    {
+        Move,
+        Translate,
+        Shoot,
+        Reload,
+        ChangeGun,
+        Damage,
     }
 
     public enum ProcessMode
     {
         Idle,
         Physics
-    }
-
-    public enum MoveMode
-    {
-        Translate,
-        MoveAndSlide,
-        MoveAndSlideWithSnap
     }
 
 }

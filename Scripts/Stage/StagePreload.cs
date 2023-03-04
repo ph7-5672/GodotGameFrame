@@ -16,6 +16,7 @@ namespace Frame.Stage
             // 填充实体对象池。
             FillEntityPools();
             
+
             ModuleStage.ChangeStage<StageTest>();
         }
 
@@ -49,7 +50,7 @@ namespace Frame.Stage
 
         void LoadAllDatatable()
         {
-            foreach (var datatableType in Constants.dataTableTypeArray)
+            foreach (var datatableType in Constants.datatableTypeArray)
             {
                 ModuleDatatable.Load(datatableType);
             }

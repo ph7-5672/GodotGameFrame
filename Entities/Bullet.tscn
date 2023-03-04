@@ -1,7 +1,7 @@
 [gd_scene load_steps=2 format=2]
 
 [sub_resource type="Curve" id=1]
-_data = [ Vector2( 0.0047619, 0.972727 ), 0.0, 0.0, 0, 0, Vector2( 0.995238, 0 ), 0.0, 0.0, 0, 0 ]
+_data = [ Vector2( 0, 0 ), 0.0, 0.0, 0, 0, Vector2( 1, 0.745454 ), -1.26, 0.0, 0, 0 ]
 
 [node name="Bullet" type="Line2D"]
 width = 2.0

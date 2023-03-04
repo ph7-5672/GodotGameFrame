@@ -8,17 +8,13 @@ namespace Frame.Form
 
         public Label bulletLabel;
 
-        public int bulletCount;
-
-        public int magazine;
-        
         public override void _Ready()
         {
             hpLabel = GetNode<Label>(nameof(hpLabel));
             bulletLabel = GetNode<Label>(nameof(bulletLabel));
         }
 
-        public void Refresh()
+        public void Refresh(int bulletCount, int magazine)
         {
             bulletLabel.Text = $"Bullet:{bulletCount}/{magazine}";
         }

@@ -16,6 +16,8 @@ namespace Frame.Stage
             
             ModuleScene.LoadScene(SceneType.Test);
             
+            playerInfoForm = (FormPlayerInfo) ModuleForm.Open(FormType.PlayerInfo);
+            
             playerEntity = ModuleEntity.Spawn(EntityType.Police);
             playerEntity.SetValue(ValueType.Move2DPlatform, new ValueMove2DPlatform()
             {
@@ -25,41 +27,28 @@ namespace Frame.Stage
             
             playerEntity.SetValue(ValueType.Hero, new ValueHero());
 
-            var datatable = ModuleDatatable.GetDatatable(DatatableType.Guns, 2);
+            var datatable = ModuleDatatable.GetDatatable(DatatableType.Shooter, 2);
             playerEntity.SetValue(ValueType.Shooter, new ValueShooter(datatable)
             {
                 bulletCount = 30
             });
-
-            /*playerEntity.AddLogic(LogicType.Player, new LogicPlayer());
-            playerEntity.AddLogic(LogicType.Move2D, new LogicMove2D());
             
-            
-            playerInfoForm = (FormPlayerInfo) ModuleForm.Open(FormType.PlayerInfo);
-            playerEntity.Behave(new BehaviorChangeGun(2));*/
         }
 
+
+
         [Event(EventType.EntitySetValue)]
-        public static void OnEntitySetValue(Node entity, string valueName, float value)
+        public static void OnEntitySetValue(Node entity, ValueType valueType, IEntityValue value)
         {
             if (Instance.playerInfoForm == null || !entity.Equals(Instance.playerEntity))
             {
                 return;
             }
 
-            if ("bulletCount".Equals(valueName))
+            if (valueType == ValueType.Shooter && value is ValueShooter shooter)
             {
-                Instance.playerInfoForm.bulletCount = (int) value;
-                Instance.playerInfoForm.Refresh();
+                Instance.playerInfoForm.Refresh(shooter.bulletCount, shooter.magazine.intFinal);
             }
-            
-            if ("magazine".Equals(valueName))
-            {
-                Instance.playerInfoForm.magazine = (int) value;
-                Instance.playerInfoForm.Refresh();
-            }
-
-
         }
     }
 }

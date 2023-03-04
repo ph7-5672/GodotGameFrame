@@ -1,43 +1,55 @@
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using Frame.Common;
 using Godot;
 
 namespace Frame.Module
 {
-    public class ModuleBehavior<T> : Singleton<ModuleBehavior<T>> where T : struct
+    public class ModuleBehavior : Singleton<ModuleBehavior>
     {
-        private static readonly Dictionary<ulong, Condition<T>> conditionDict = new Dictionary<ulong, Condition<T>>();
+        private readonly Dictionary<ulong, Delegate[]> conditionDict = new Dictionary<ulong, Delegate[]>();
 
-        private static readonly Dictionary<ulong, Executor<T>> executorDict =
-            new Dictionary<ulong, Executor<T>>();
+        private readonly Dictionary<ulong, Delegate[]> executorDict = new Dictionary<ulong, Delegate[]>();
 
         /// <summary>
         /// 注册条件节点。
         /// </summary>
         /// <param name="entity"></param>
         /// <param name="condition"></param>
-        public static void LoginCondition(Node entity, Condition<T> condition)
+        public static void LoginCondition<T>(Node entity, Condition<T> condition) where T : struct, IEntityBehavior
         {
             var key = entity.GetInstanceId();
-            if (conditionDict.TryGetValue(key, out var conditions))
+            var index = (int) new T().Type;
+            if (!Instance.conditionDict.TryGetValue(key, out var delegates))
+            {
+                delegates = new Delegate[Constants.behaviorTypeArray.Length];
+                delegates[index] = condition;
+                Instance.conditionDict.Add(key, delegates);
+            }
+            else if (delegates[index] is Condition<T> conditions)
             {
                 conditions += condition;
-                conditionDict[key] = conditions;
+                delegates[index] = conditions;
+                Instance.conditionDict[key] = delegates;
             }
             else
             {
-                conditionDict.Add(key, condition);
+                delegates[index] = condition;
             }
         }
 
 
-        public static void LogoutCondition(Node entity, Condition<T> condition)
+        public static void LogoutCondition<T>(Node entity, Condition<T> condition) where T : struct, IEntityBehavior
         {
             var key = entity.GetInstanceId();
-            if (conditionDict.TryGetValue(key, out var conditions))
+            var index = (int) new T().Type;
+            if (Instance.conditionDict.TryGetValue(key, out var delegates) &&
+                delegates[index] is Condition<T> conditions)
             {
                 conditions -= condition;
-                conditionDict[key] = conditions;
+                delegates[index] = conditions;
+                Instance.conditionDict[key] = delegates;
             }
         }
 
@@ -46,48 +58,59 @@ namespace Frame.Module
         /// </summary>
         /// <param name="entity"></param>
         /// <param name="executor"></param>
-        public static void LoginExecutor(Node entity, Executor<T> executor)
+        public static void LoginExecutor<T>(Node entity, Executor<T> executor) where T : struct, IEntityBehavior
         {
             var key = entity.GetInstanceId();
-            if (executorDict.TryGetValue(key, out var executors))
+            var index = (int) new T().Type;
+            if (!Instance.executorDict.TryGetValue(key, out var delegates))
+            {
+                delegates = new Delegate[Constants.behaviorTypeArray.Length];
+                delegates[index] = executor;
+                Instance.executorDict.Add(key, delegates);
+            }
+            else if (delegates[index] is Executor<T> executors)
             {
                 executors += executor;
-                executorDict[key] = executors;
+                delegates[index] = executors;
+                Instance.executorDict[key] = delegates;
             }
             else
             {
-                executorDict.Add(key, executor);
+                delegates[index] = executor;
             }
         }
-        
-        
-        public static void LogoutExecutor(Node entity, Executor<T> executor)
+
+
+        public static void LogoutExecutor<T>(Node entity, Executor<T> executor) where T : struct, IEntityBehavior
         {
             var key = entity.GetInstanceId();
-            if (executorDict.TryGetValue(key, out var executors))
+            var index = (int) new T().Type;
+            if (Instance.executorDict.TryGetValue(key, out var delegates) && delegates[index] is Executor<T> executors)
             {
                 executors -= executor;
-                executorDict[key] = executors;
+                delegates[index] = executors;
+                Instance.executorDict[key] = delegates;
             }
         }
 
 
-        public static bool Behave(Node entity, T behavior)
+        public static bool Behave<T>(Node entity, T behavior) where T : struct, IEntityBehavior
         {
             var key = entity.GetInstanceId();
-            if (conditionDict.TryGetValue(key, out var conditions))
+            var index = (int) new T().Type;
+
+            if (Instance.conditionDict.TryGetValue(key, out var conditionDelegates) &&
+                conditionDelegates[index] is Condition<T> conditions)
             {
-                foreach (var condition in conditions.GetInvocationList())
+                if (conditions.GetInvocationList().AsParallel()
+                    .Select(condition => (bool) condition.DynamicInvoke(entity, behavior)).Any(result => !result))
                 {
-                    var result = (bool) condition.DynamicInvoke(entity, behavior);
-                    if (!result)
-                    {
-                        return false;
-                    }
+                    return false;
                 }
             }
 
-            if (executorDict.TryGetValue(key, out var executors))
+            if (Instance.executorDict.TryGetValue(key, out var executorDelegates) &&
+                executorDelegates[index] is Executor<T> executors)
             {
                 executors(entity, behavior);
             }

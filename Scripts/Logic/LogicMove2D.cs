@@ -62,6 +62,16 @@ namespace Frame.Logic
                 entity.SetValue(ValueType.Move2D, value);
             }
         }
-        
+
+        [Event(EventType.EntityZeroHp)]
+        public static void OnZeroHp(Node entity)
+        {
+            if (entity.TryGetValue(ValueType.Move2D, out ValueMove2D move))
+            {
+                move.velocity = Vector2.Zero;
+                entity.SetValue(ValueType.Move2D, move);
+            }
+        }
+
     }
 }

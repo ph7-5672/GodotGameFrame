@@ -19,24 +19,22 @@ namespace Frame.Common
         
     }
 
+    public interface IEntityBehavior
+    {
+        BehaviorType Type { get; }
+    }
+
+
     public interface IStage
     {
         void OnEnter();
 
         void OnExit();
     }
-    
-    public interface ITableData
-    {
-        /// <summary>
-        /// 表格里的编号。
-        /// </summary>
-        int Id { get; set; }
-
-        void OnParse(string[] line);
-    }
 
     public delegate bool Condition<in T>(Node entity, T behavior) where T : struct;
+
+    public delegate bool TestCondition(Node entity, IEntityBehavior behavior);
     
     public delegate void Executor<in T>(Node entity, T behavior) where T : struct;
     

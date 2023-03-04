@@ -13,6 +13,7 @@ namespace Frame.Logic
         protected override void Process(Node2D entity, float delta)
         {
             ArrowInput(entity);
+            ActionInput(entity);
             MouseInput(entity);
         }
         
@@ -27,6 +28,13 @@ namespace Frame.Logic
             entity.Behave(new BehaviorMove(arrow));
         }
 
+        private void ActionInput(Node2D entity)
+        {
+            if (Input.IsActionPressed("reload"))
+            {
+                entity.Behave(new BehaviorReload());
+            }
+        }
 
         private void MouseInput(Node2D entity)
         {
@@ -34,7 +42,7 @@ namespace Frame.Logic
             {
                 var muzzlePosition = entity.GlobalPosition;
                 var targetPosition = entity.GetGlobalMousePosition();
-                entity.Behave(new BehaviorShoot(muzzlePosition, targetPosition));
+                entity.Behave(new BehaviorShoot(muzzlePosition, targetPosition, 1, 1));
             }
         }
 
