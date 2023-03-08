@@ -5,7 +5,7 @@ namespace Frame.Logic
 {
     public class LogicMove2D : LogicBase<Node2D>
     {
-        protected override ValueType ValueType => ValueType.Move2D;
+        public override ValueType ValueType => ValueType.Move2D;
 
         protected override void Ready(Node2D entity)
         {

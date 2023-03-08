@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Frame.Module;
 using Godot;
 using Godot.Collections;
@@ -97,7 +98,18 @@ namespace Frame.Common
         {
             return GameFrame.Entity.HasValue<T>(entity);
         }
-        
+
+
+        public static BuffType AddFlags(this BuffType type, params BuffType[] types)
+        {
+            return types.Aggregate(type, (current, buffType) => current | buffType);
+        }
+
+
+        public static BuffType RemoveFlags(this BuffType type, params BuffType[] types)
+        {
+            return types.Aggregate(type, (current, buffType) => current ^ buffType);
+        }
 
     }
 }

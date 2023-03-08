@@ -1,13 +1,11 @@
-using System.Diagnostics;
 using Frame.Common;
-using Frame.Module;
 using Godot;
 
 namespace Frame.Logic
 {
     public class LogicShooter : LogicBase<KinematicBody2D>
     {
-        protected override ValueType ValueType => ValueType.Shooter;
+        public override ValueType ValueType => ValueType.Shooter;
 
         protected override void Ready(KinematicBody2D entity)
         {
@@ -42,39 +40,12 @@ namespace Frame.Logic
         protected virtual void Shoot(Node entity, BehaviorShoot behavior)
         {
             var shooter = entity.GetValue<ValueShooter>();
-
             if (shooter.bulletCount > 0)
             {
                 GameFrame.Timer.StartNew(entity, shooter.interval.final, $"{shooter.name}_cooling");
                 for (var i = 0; i < behavior.bulletShoot; ++i)
                 {
-                    var trans = behavior.targetPosition - behavior.muzzlePosition;
-                    var direction = trans.Normalized();
-                    // 随机扩散。
-                    if (direction != Vector2.Zero)
-                    {
-                        var spread = shooter.spread.final;
-                        var angle = UtilityRandom.NextFloat(-spread, spread, 3);
-
-                        var rad = Mathf.Deg2Rad(angle);
-                        direction = direction.Rotated(rad);
-                    }
-
-                    // 生成子弹实体，并控制它的方向和速度。
-                    if (GameFrame.Entity.Spawn(EntityType.Bullet) is Line2D bullet)
-                    {
-                        bullet.Position = behavior.muzzlePosition;
-                        var move2D = new ValueMove2D(ProcessMode.Physics)
-                        {
-                            velocity = direction * shooter.bulletSpeed.final
-                        };
-                        bullet.SetValue(move2D);
-                        
-                        bullet.SetValue(new ValueBullet(20f, shooter.shootLayer));
-                        var range = shooter.range.final * Constants.unitMeter;
-                        bullet.SetValue(new ValueHealth(range, new Value(range)));
-                        bullet.Width = shooter.caliber.final * Constants.unitMeter / 100f;
-                    }
+                    SpawnBullet(behavior, shooter);
                 }
                 shooter.bulletCount -= behavior.bulletConsume;
             }
@@ -84,6 +55,48 @@ namespace Frame.Logic
             }
 
             entity.SetValue(shooter);
+        }
+
+
+        private void SpawnBullet(BehaviorShoot behavior, ValueShooter shooter)
+        {
+            var trans = behavior.targetPosition - behavior.muzzlePosition;
+            var direction = trans.Normalized();
+            // 随机扩散。
+            if (direction != Vector2.Zero)
+            {
+                var spread = shooter.spread.final;
+                var angle = UtilityRandom.NextFloat(-spread, spread, 3);
+
+                var rad = Mathf.Deg2Rad(angle);
+                direction = direction.Rotated(rad);
+            }
+
+            // 生成子弹实体，并控制它的方向和速度。
+            if (GameFrame.Entity.Spawn(EntityType.Bullet) is Line2D bullet)
+            {
+                bullet.Position = behavior.muzzlePosition;
+                var move2D = new ValueMove2D(ProcessMode.Physics)
+                {
+                    velocity = direction * shooter.bulletSpeed.final
+                };
+                bullet.SetValue(move2D);
+                        
+                bullet.SetValue(new ValueBullet(shooter.bulletSpeed.final, shooter.shootLayer));
+                var range = shooter.range.final * Constants.unitMeter;
+                bullet.SetValue(new ValueHealth(range, new Value(range)));
+                bullet.Width = shooter.caliber.final * Constants.unitMeter / 100f;
+                        
+                // 计算子弹的路径并绘制拖尾。
+                // 因为拖尾长度=子弹速度。
+                var finalTranslation = move2D.velocity;
+                const int pointCount = 8;
+                var pointGap = finalTranslation.Length() / pointCount;
+                for (var j = 0; j < pointCount; ++j)
+                {
+                    bullet.AddPoint(direction * pointGap * j);
+                }
+            }
         }
 
 

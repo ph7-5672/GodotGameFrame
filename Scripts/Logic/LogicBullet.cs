@@ -6,7 +6,7 @@ namespace Frame.Logic
 {
     public class LogicBullet : LogicBase<Line2D>
     {
-        protected override ValueType ValueType => ValueType.Bullet;
+        public override ValueType ValueType => ValueType.Bullet;
 
         protected override void Ready(Line2D entity)
         {
@@ -20,11 +20,6 @@ namespace Frame.Logic
 
         private void Translate(Node entity, BehaviorTranslate behavior)
         {
-            if (entity.IsKilled())
-            {
-                return;
-            }
-
             if (!(entity is Line2D line2D))
             {
                 return;
@@ -47,38 +42,21 @@ namespace Frame.Logic
                 return;
             }
             
-            // 子弹拖尾 begin
             var bullet = entity.GetValue<ValueBullet>();
-            var lastPosition = Vector2.Zero;
-                
-            if (pointCount > 0)
-            {
-                lastPosition = line2D.GetPointPosition(pointCount - 1);
-            }
-
-            var points = line2D.Points;
-            var length = 0f;
-            for (var i = 1; i < points.Length; ++i)
-            {
-                var gap = points[i] - points[i - 1];
-                length += gap.Length();
-            }
-            
-            if (length < bullet.tail)
-            {
-                var point = lastPosition + translation;
-                line2D.AddPoint(point);
-            }
-            // 子弹拖尾 end
-            
             // 移动距离限制。
             line2D.Behave(new BehaviorDamage(line2D, translation.Length()));
-            
+
+           
             // 击中判定。
             var width = line2D.Width;
             var layer = bullet.layer;
             var from = line2D.Position;
-            var to = from + translation.Normalized() * length;
+            if (pointCount > 0)
+            {
+                from += line2D.GetPointPosition(pointCount - 1);
+            }
+            
+            var to = from + translation;
             var exclude = new Array(line2D);
 
             var world2D = line2D.GetWorld2d();

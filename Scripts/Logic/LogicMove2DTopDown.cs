@@ -6,7 +6,7 @@ namespace Frame.Logic
 {
     public class LogicMove2DTopDown : LogicMove2D
     {
-        protected override ValueType ValueType => ValueType.Move2DTopDown;
+        public override ValueType ValueType => ValueType.Move2DTopDown;
 
         protected override void Translate(Node2D entity, Vector2 translation)
         {

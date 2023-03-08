@@ -75,18 +75,22 @@ namespace Frame
         {
             foreach (Node entity in EntityRoot.GetChildren().AsParallel())
             {
+                if (entity.IsKilled())
+                {
+                    continue;
+                }
                 action(entity);
             }
         }
 
         public override void _Process(float delta)
         {
-            ForeachLogics(logic => ForeachEntities(entity => logic.Process(entity, delta)));
+            ForeachEntities(entity => Entity.ProcessValues(entity, delta));
         }
 
         public override void _PhysicsProcess(float delta)
         {
-            ForeachLogics(logic => ForeachEntities(entity => logic.PhysicsProcess(entity, delta)));
+            ForeachEntities(entity => Entity.PhysicsProcessValues(entity, delta));
         }
     }
 }

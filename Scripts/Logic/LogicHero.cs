@@ -8,7 +8,7 @@ namespace Frame.Logic
     /// </summary>
     public class LogicHero : LogicBase<Node2D>
     {
-        protected override ValueType ValueType => ValueType.Hero;
+        public override ValueType ValueType => ValueType.Hero;
 
         protected override void Process(Node2D entity, float delta)
         {
@@ -46,6 +46,11 @@ namespace Frame.Logic
             }
         }
 
-       
+        private void SkillInput(Node2D entity)
+        {
+            
+        }
+
+
     }
 }

@@ -45,7 +45,12 @@ namespace Frame.Common
         Move2DTopDown,
         Shooter,
         Health,
-        Bullet
+        Bullet,
+        Buff,
+        StunByObstacle, // 被障碍撞晕。
+
+        
+        
     }
 
     public enum LogicType
@@ -105,12 +110,39 @@ namespace Frame.Common
         Reload,
         ChangeGun,
         Damage,
+        AddBuff,
     }
 
     public enum ProcessMode
     {
         Idle,
         Physics
+    }
+
+    [Flags]
+    public enum BuffType
+    {
+        
+        
+        #region 负面状态
+        Stun = 1, //晕眩
+        Burn = 2, //烧伤
+        Freeze = 4,//冰冻
+        Poison = 8,//中毒
+        
+
+        #endregion
+        
+        #region 正面状态
+        
+        
+
+        #endregion
+
+        
+        
+        
+        
     }
 
 }

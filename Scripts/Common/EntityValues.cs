@@ -167,4 +167,19 @@ namespace Frame.Common
         
         public ValueType Type => ValueType.Health;
     }
+
+
+
+    public struct ValueBuff : IEntityValue
+    {
+        public ValueType Type => ValueType.Buff;
+    }
+
+
+    public struct ValueStunByObstacle : IEntityValue
+    {
+        public ValueType Type => ValueType.StunByObstacle;
+    }
+
+
 }

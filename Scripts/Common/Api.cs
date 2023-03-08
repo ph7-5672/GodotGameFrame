@@ -5,6 +5,8 @@ namespace Frame.Common
 
     public interface IEntityLogic
     {
+        ValueType ValueType { get; }
+        
         void Ready(Object entity);
         
         void Dispose(Object entity);
@@ -31,6 +33,7 @@ namespace Frame.Common
 
         void OnExit();
     }
+
 
     public delegate bool Condition<in T>(Node entity, T behavior) where T : struct;
 

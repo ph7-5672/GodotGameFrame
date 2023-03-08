@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Frame.Common;
+using Frame.Logic;
 using Godot;
 using ValueType = Frame.Common.ValueType;
 
@@ -98,7 +99,6 @@ namespace Frame.Module
         
         public void SetValue(Node entity, IEntityValue value)
         {
-            
             var instanceId = entity.GetInstanceId();
             if (!entityValuePool.TryGetValue(instanceId, out var values))
             {
@@ -109,12 +109,21 @@ namespace Frame.Module
             var index = (int) value.Type;
             var origin = values[index];
             values[index] = value;
-            if (origin == null)
+            
+            GameFrame.Event.Send(EventType.EntitySetValue, entity, value);
+            
+            if (origin != null)
             {
-                GameFrame.ForeachLogics(logic => logic.Ready(entity));
+                return;
             }
 
-            GameFrame.Event.Send(EventType.EntitySetValue, entity, value);
+            GameFrame.ForeachLogics(logic =>
+            {
+                if (logic.ValueType == value.Type)
+                {
+                    logic.Ready(entity);
+                }
+            });
             
         }
         
@@ -134,14 +143,22 @@ namespace Frame.Module
             return false;
         }
 
+
         public void RemoveValue(Node entity, ValueType valueType)
         {
             var instanceId = entity.GetInstanceId();
             var index = (int) valueType;
             if (entityValuePool.TryGetValue(instanceId, out var values))
             {
+                var value = values[index];
                 values[index] = null;
-                GameFrame.ForeachLogics(logic => logic.Dispose(entity));
+                GameFrame.ForeachLogics(logic =>
+                {
+                    if (logic.ValueType == value.Type)
+                    {
+                        logic.Dispose(entity);
+                    }
+                });
             }
         }
 
@@ -152,8 +169,64 @@ namespace Frame.Module
             {
                 for (var i = 0; i < values.Length; i++)
                 {
+                    var value = values[i];
                     values[i] = null;
-                    GameFrame.ForeachLogics(logic => logic.Dispose(entity));
+                    GameFrame.ForeachLogics(logic =>
+                    {
+                        if (logic.ValueType == value.Type)
+                        {
+                            logic.Dispose(entity);
+                        }
+                    });
+                }
+            }
+        }
+
+
+        public void ProcessValues(Node entity, float delta)
+        {
+            var instanceId = entity.GetInstanceId();
+            if (entityValuePool.TryGetValue(instanceId, out var values))
+            {
+                for (var i = 0; i < values.Length; i++)
+                {
+                    var value = values[i];
+                    if (value == null)
+                    {
+                        continue;
+                    }
+                    
+                    GameFrame.ForeachLogics(logic =>
+                    {
+                        if (logic.ValueType == value.Type)
+                        {
+                            logic.Process(entity, delta);
+                        }
+                    });
+                }
+            }
+        }
+        
+        public void PhysicsProcessValues(Node entity, float delta)
+        {
+            var instanceId = entity.GetInstanceId();
+            if (entityValuePool.TryGetValue(instanceId, out var values))
+            {
+                for (var i = 0; i < values.Length; i++)
+                {
+                    var value = values[i];
+                    if (value == null)
+                    {
+                        continue;
+                    }
+
+                    GameFrame.ForeachLogics(logic =>
+                    {
+                        if (logic.ValueType == value.Type)
+                        {
+                            logic.PhysicsProcess(entity, delta);
+                        }
+                    });
                 }
             }
         }
@@ -161,13 +234,13 @@ namespace Frame.Module
         #endregion
 
         [Event(EventType.EntitySpawn)]
-        public void OnEntitySpawn(EntityType type, Node entity)
+        public static void OnEntitySpawn(EntityType type, Node entity)
         {
             var instanceId = entity.GetInstanceId();
-            if (!entityValuePool.TryGetValue(instanceId, out var values))
+            if (!Instance.entityValuePool.TryGetValue(instanceId, out var values))
             {
                 values = new IEntityValue[Constants.valueTypeArray.Length];
-                entityValuePool.Add(instanceId, values);
+                Instance.entityValuePool.Add(instanceId, values);
             }
         }
     }

@@ -5,7 +5,7 @@ namespace Frame.Logic
 {
     public class LogicHealth : LogicBase<Node>
     {
-        protected override ValueType ValueType => ValueType.Health;
+        public override ValueType ValueType => ValueType.Health;
 
         protected override void Ready(Node entity)
         {

@@ -5,7 +5,7 @@ namespace Frame.Logic
 {
     public abstract class LogicBase<T> : IEntityLogic where T : Node
     {
-        protected abstract ValueType ValueType { get; }
+        public abstract ValueType ValueType { get; }
 
         protected virtual void Ready(T entity)
         {
@@ -25,7 +25,7 @@ namespace Frame.Logic
 
         public void Ready(Object entity)
         {
-            if (entity is T t && t.HasValue(ValueType))
+            if (entity is T t)
             {
                 Ready(t);
             }
@@ -33,7 +33,7 @@ namespace Frame.Logic
 
         public void Dispose(Object entity)
         {
-            if (entity is T t && t.HasValue(ValueType))
+            if (entity is T t)
             {
                 Dispose(t);
             }
@@ -41,7 +41,7 @@ namespace Frame.Logic
 
         public void Process(Object entity, float delta)
         {
-            if (entity is T t && t.HasValue(ValueType))
+            if (entity is T t)
             {
                 Process(t, delta);
             }
@@ -49,7 +49,7 @@ namespace Frame.Logic
 
         public void PhysicsProcess(Object entity, float delta)
         {
-            if (entity is T t && t.HasValue(ValueType))
+            if (entity is T t)
             {
                 PhysicsProcess(t, delta);
             }

@@ -1,5 +1,4 @@
 using Frame.Common;
-using Frame.Entity;
 using Frame.Form;
 using Godot;
 
@@ -12,7 +11,6 @@ namespace Frame.Stage
         
         public override void OnEnter()
         {
-            
             GameFrame.Scene.LoadScene(SceneType.Test);
             
             playerInfoForm = (FormPlayerInfo) GameFrame.Form.Open(FormType.PlayerInfo);
@@ -26,11 +24,25 @@ namespace Frame.Stage
             
             playerEntity.SetValue(new ValueHero());
 
+            playerEntity.SetValue(new ValueBuff());
+            playerEntity.SetValue(new ValueStunByObstacle());
+            playerEntity.SetValue(new ValueHealth());
+            
+            
             var datatable = GameFrame.Datatable.GetDatatable(DatatableType.Shooter, 2);
             playerEntity.SetValue(new ValueShooter(datatable)
             {
                 bulletCount = 30
             });
+            
+            
+            
+
+            var zombie = (Node2D)GameFrame.Entity.Spawn(EntityType.Zombie);
+            zombie.SetValue(new ValueMove2DPlatform());
+            zombie.Position = new Vector2(200f, 0);
+            
+
             
         }
 
@@ -48,5 +60,8 @@ namespace Frame.Stage
                 Instance.playerInfoForm.Refresh(shooter.bulletCount, shooter.magazine.intFinal);
             }
         }
+        
+        
+        
     }
 }

@@ -5,7 +5,7 @@ namespace Frame.Logic
 {
     public class LogicMove2DPlatform : LogicBase<KinematicBody2D>
     {
-        protected override ValueType ValueType => ValueType.Move2DPlatform;
+        public override ValueType ValueType => ValueType.Move2DPlatform;
 
         protected override void Ready(KinematicBody2D entity)
         {
@@ -32,9 +32,30 @@ namespace Frame.Logic
             
             var translation = new Vector2(move2DPlatform.velocity.x * move2DPlatform.speed.final, move2DPlatform.velocity.y);
             translation *= Constants.unitMeter;
-            
+
+            /*if (GameFrame.Timer.HasTimer($"{entity.GetInstanceId()}_stunned"))
+            {
+                return;
+            }*/
+
             entity.MoveAndSlideWithSnap(translation, move2DPlatform.snap, Vector2.Up, true);
+
             
+            /*var collision = entity.GetLastSlideCollision();
+            // TODO 捋一下逻辑：
+            // 水平方向碰到障碍会有一个短暂的晕眩。
+            // 晕眩过程中无法响应操作（Buff系统）。
+            // 可以加一个眩晕特效。
+            // 
+            if (collision?.Collider is TileMap tile && tile.CollisionLayer == 8)
+            {
+                //GD.Print("Success");
+                var y = tile.CellSize.y;
+                var direction = collision.Normal;
+                entity.MoveAndSlide(direction * translation.Length() * 2f);
+                GameFrame.Timer.StartNew(entity, 1.5f, $"{entity.GetInstanceId()}_stunned");
+            }*/
+        
             entity.SetValue(move2DPlatform);
         }
         
@@ -65,6 +86,7 @@ namespace Frame.Logic
             entity.SetValue(move2DPlatform);
             
         }
+        
         
     }
 }

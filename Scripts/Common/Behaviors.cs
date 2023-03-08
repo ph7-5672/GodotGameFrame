@@ -1,3 +1,4 @@
+using System;
 using Godot;
 
 namespace Frame.Common
@@ -90,6 +91,42 @@ namespace Frame.Common
         }
 
         public BehaviorType Type => BehaviorType.Damage;
+    }
+
+
+    public readonly struct BehaviorAddBuff : IEntityBehavior
+    {
+        /// <summary>
+        /// buff类型。
+        /// </summary>
+        public readonly BuffType buffType;
+        /// <summary>
+        /// 修改数值，全部为加算。
+        /// </summary>
+        public readonly Value valueModifer;
+        /// <summary>
+        /// 持续时间，为0代表为永久buff。
+        /// </summary>
+        public readonly float duration;
+        /// <summary>
+        /// 等级。高等级驱散同等级或低等级。
+        /// </summary>
+        public readonly int level;
+        /// <summary>
+        /// 触发间隔，为0代表不触发多次。
+        /// </summary>
+        public readonly float interval;
+
+        public BehaviorAddBuff(BuffType buffType, Value valueModifer, float duration, int level, float interval)
+        {
+            this.buffType = buffType;
+            this.valueModifer = valueModifer;
+            this.duration = duration;
+            this.level = level;
+            this.interval = interval;
+        }
+
+        public BehaviorType Type => BehaviorType.AddBuff;
     }
 
 }

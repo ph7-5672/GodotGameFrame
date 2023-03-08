@@ -12,7 +12,7 @@ namespace Frame.Module
         public void Load(DatatableType datatableType)
         {
             var file = new File();
-            file.Open($"{Constants.resourceRoot}Database/{datatableType}{Constants.databaseSuffix}", File.ModeFlags.Read);
+            file.Open($"{Constants.resourceRoot}Datatable/{datatableType}{Constants.databaseSuffix}", File.ModeFlags.Read);
             var index = (int) datatableType;
             var list = tables[index];
             if (list == null)

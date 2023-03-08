@@ -96,6 +96,11 @@ namespace Frame.Module
 
         public bool Behave<T>(Node entity, T behavior) where T : struct, IEntityBehavior
         {
+            if (entity.IsKilled())
+            {
+                return false;
+            }
+            
             var key = entity.GetInstanceId();
             var index = (int) new T().Type;
 
@@ -119,19 +124,19 @@ namespace Frame.Module
         }
         
         [Event(EventType.EntitySpawn)]
-        public void OnEntitySpawn(EntityType type, Node entity)
+        public static void OnEntitySpawn(EntityType type, Node entity)
         {
             var key = entity.GetInstanceId();
-            if (!conditionDict.TryGetValue(key, out var conditions))
+            if (!Instance.conditionDict.TryGetValue(key, out var conditions))
             {
                 conditions = new Delegate[Constants.behaviorTypeArray.Length];
-                conditionDict.Add(key, conditions);
+                Instance.conditionDict.Add(key, conditions);
             }
             
-            if (!executorDict.TryGetValue(key, out var executors))
+            if (!Instance.executorDict.TryGetValue(key, out var executors))
             {
                 executors = new Delegate[Constants.behaviorTypeArray.Length];
-                executorDict.Add(key, executors);
+                Instance.executorDict.Add(key, executors);
             }
         }
     }
